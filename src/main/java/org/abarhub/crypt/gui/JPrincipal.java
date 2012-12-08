@@ -9,6 +9,10 @@ import java.security.*;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import org.abarhub.crypt.security.KeyStoreHashException;
 import org.abarhub.crypt.security.Tools;
 import org.abarhub.crypt.security.Traitement;
@@ -61,6 +65,9 @@ public class JPrincipal extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
+        jButton6 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -97,6 +104,22 @@ public class JPrincipal extends javax.swing.JFrame {
             }
         });
 
+        jButton5.setText("<");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jTextField1.setText("jTextField1");
+
+        jButton6.setText(">");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -105,7 +128,12 @@ public class JPrincipal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 14, Short.MAX_VALUE)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton3)
@@ -120,13 +148,16 @@ public class JPrincipal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 346, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)
                     .addComponent(jButton3)
-                    .addComponent(jButton4))
+                    .addComponent(jButton4)
+                    .addComponent(jButton5)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton6))
                 .addContainerGap())
         );
 
@@ -210,6 +241,14 @@ public class JPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        recherche(false);
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        recherche(true);
+    }//GEN-LAST:event_jButton6ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -260,8 +299,11 @@ public class JPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 
     private boolean lecture_fichier() {
@@ -323,6 +365,65 @@ public class JPrincipal extends javax.swing.JFrame {
     }
     
     private void alerte(String titre,String msg,int option){
-        JOptionPane.showMessageDialog(this, titre,msg,option);
+        JOptionPane.showMessageDialog(this, msg,titre,option);
+    }
+    
+    private void recherche(boolean suivant)
+    {
+        final String str_recherche,str_contenu;
+        final int pos_debut,pos_traitement,pos_traitement_fin,new_pos;
+        int pos,i;
+        str_recherche=jTextField1.getText();
+        str_contenu=jTextArea1.getText();
+        if(str_recherche!=null&&!str_recherche.trim().isEmpty())
+        {
+            pos=jTextArea1.getCaretPosition();
+            pos_debut=pos;
+            if(suivant)
+            {
+                pos=str_contenu.indexOf(str_recherche, pos_debut);
+                new_pos=pos+str_recherche.length();
+            }
+            else
+            {
+                pos=str_contenu.lastIndexOf(str_recherche, pos_debut);
+                new_pos=Math.max(0, pos-1);
+            }
+            if(pos!=-1)
+            {
+                pos_traitement=pos;
+                pos_traitement_fin=pos_traitement+str_recherche.length();
+                SwingUtilities.invokeLater(
+                        new Runnable() {
+
+                        @Override
+                        public void run() {
+                                    if(false){
+                                        jTextArea1.setCaretPosition(pos_traitement_fin);
+                                    jTextArea1.moveCaretPosition(pos_traitement);
+                                    }
+                                    else{
+                                        Highlighter h = jTextArea1.getHighlighter();
+                                        h.removeAllHighlights();
+                                        try {
+                                            h.addHighlight(pos_traitement ,
+                                                pos_traitement_fin,
+                                                DefaultHighlighter.DefaultPainter);
+                                        } catch (BadLocationException ex) {
+                                            logger.error("Erreur:"+ex.getLocalizedMessage(), ex);
+                                        }
+                                    }
+                                    jTextArea1.setCaretPosition(new_pos);
+                                }
+                            }
+                        );
+                
+            }
+            else
+            {
+                erreur("Impossible de trouver le texte : "+str_recherche);
+            }
+            logger.info("pos="+pos);
+        }
     }
 }
