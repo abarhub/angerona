@@ -65,7 +65,7 @@ public class Traitement {
         crypt.loadKeyStore(key);
     }
     
-    public boolean verifie_password(char[] password)
+    public Resultat verifie_password(char[] password)
     {
         return crypt.verifie_password(password);
     }

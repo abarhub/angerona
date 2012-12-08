@@ -238,18 +238,23 @@ public class Cryptage {
         key_store.load(new FileInputStream(KeyStoreFile()), key);
     }
 
-    public boolean verifie_password(char[] password) {
+    public Resultat verifie_password(char[] password) {
+        Resultat res;
+        res=new Resultat();
         try {
             KeyStore key_store0;
             if(password==null||password.length==0)
-                return false;
+            {
+                res.addError("Mot de passe vide");
+                return res;
+            }
             key_store0=KeyStore.getInstance(KeyStoreFormat, "BC");
             key_store0.load(new FileInputStream(KeyStoreFile()), password);
         } catch (GeneralSecurityException | IOException ex) {
             logger.error(ex.getLocalizedMessage(),ex);
-            return false;
+            res.addError(ex.getLocalizedMessage());
         }
-        return true;
+        return res;
     }
     
     public void log(String msg){

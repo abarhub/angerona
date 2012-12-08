@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import org.abarhub.crypt.gui.JPrincipal;
 import org.abarhub.crypt.security.Config;
+import org.abarhub.crypt.security.Resultat;
 import org.abarhub.crypt.security.Tools;
 import org.abarhub.crypt.security.Traitement;
 import org.slf4j.*;
@@ -25,7 +26,6 @@ public class App
     public static void main( String[] args )
     {
         logger.info("Demarrage...");
-        init_log();
         demarre_gui();
         //test1();
         //test2();
@@ -48,17 +48,31 @@ public class App
             int okCxl = JOptionPane.showConfirmDialog(null, pf, message, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             if (okCxl == JOptionPane.OK_OPTION) {
+                Resultat res;
                 //String password = new String(pf.getPassword());
                 //System.err.println("You entered: " + password);
-                if(verifie(pf.getPassword()))
+                res=verifie(pf.getPassword());
+                if(!res.isError())
                 {
                     ouvre_fenetre(pf.getPassword());
                     break;
                 }
                 else
                 {
-                    logger.info("Erreur password demarrage");
-                    JOptionPane.showMessageDialog(null, "Erreur","Mot de passe incorrecte.",JOptionPane.ERROR_MESSAGE);
+                    String msg_err;
+                    msg_err=res.getMessageError();
+                    if(msg_err!=null&&msg_err.contains("Illegal key size"))
+                    {
+                        msg_err+=". Pb de contrainte du key size pour ce JRE ?";
+                        logger.info("Erreur key size pour le jre ? ( "
+                                + "http://www.bouncycastle.org/wiki/display/JA1/Frequently+Asked+Questions "
+                                + "classpath:"+System.getenv("CLASSPATH")+" )");
+                    }
+                    logger.info("Erreur password demarrage:"+msg_err);
+                    JOptionPane.showMessageDialog(null, 
+                            "Mot de passe incorrecte. "+((msg_err!=null)?"("+msg_err+")":""),
+                            "Erreur",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
             else if(okCxl==JOptionPane.CANCEL_OPTION)
@@ -82,7 +96,6 @@ public class App
                     }
                 }
             } catch (    ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-                //java.util.logging.Logger.getLogger(JPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 logger.error(ex.getLocalizedMessage(), ex);
             }
         }
@@ -104,12 +117,12 @@ public class App
         String passwordString = new String(passwordChars);
             tr.initialise_keystore(passwordString.toCharArray());
         } catch (GeneralSecurityException | IOException ex) {
-            //Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
             logger.error(ex.getLocalizedMessage(), ex);
         }
     }
 
-    private static boolean verifie(char[] password) {
+    private static Resultat verifie(char[] password) {
+        Resultat res=new Resultat();
         try {
             Traitement tr;
             tr=new Traitement();
@@ -117,30 +130,10 @@ public class App
         } catch (IOException ex) {
             //Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
             logger.error(ex.getLocalizedMessage(), ex);
+            res.addError(ex.getLocalizedMessage());
         }
-        return false;
-    }
-
-    private static void init_log() {
-        Config config;
-        File f;
-        /*Handler handler;
-        try{
-            config=new Config();
-            f=config.getRep_data();
-            Logger.getLogger("").setLevel(Level.ALL);
-            if(f!=null)
-            {
-                handler=new FileHandler(f.getAbsolutePath()+"/myapp.log",0,10);
-            }
-            else
-            {
-                handler=new FileHandler("myapp.log",0,10);
-            }
-            Logger.getLogger("").addHandler(handler);
-        }catch(IOException ex){
-            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+        
+        return res;
     }
          
 }
