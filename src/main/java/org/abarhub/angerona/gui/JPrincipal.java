@@ -4,12 +4,17 @@
  */
 package org.abarhub.angerona.gui;
 
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.security.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
@@ -26,7 +31,7 @@ import org.slf4j.*;
  *
  * @author abarret
  */
-public class JPrincipal extends javax.swing.JFrame {
+public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 
     final static Logger logger = LoggerFactory.getLogger(JPrincipal.class);
     
@@ -111,8 +116,6 @@ public class JPrincipal extends javax.swing.JFrame {
             }
         });
 
-        jTextField1.setText("jTextField1");
-
         jButton6.setText(">");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -165,7 +168,7 @@ public class JPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        System.exit(0);
+        sortie();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -425,5 +428,58 @@ public class JPrincipal extends javax.swing.JFrame {
             }
             logger.info("pos="+pos);
         }
+    }
+    
+    private void sortie(){
+        String message,message2;
+        List<Object> options = new ArrayList<>();
+        Object defaultOption;
+        message="Sortie";
+        message2="Etes vous sur de vouloir sortir ?";
+        options.add(UIManager.getString("OptionPane.yesButtonText"));
+        options.add(UIManager.getString("OptionPane.noButtonText"));
+        defaultOption = UIManager.getString("OptionPane.noButtonText");
+        int okCxl = JOptionPane.showOptionDialog(this, message2, message, 
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options.toArray(), defaultOption);
+
+        if (okCxl == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+        
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        sortie();
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+        
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+        
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+        
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+        
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+        
     }
 }

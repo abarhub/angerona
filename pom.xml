@@ -68,7 +68,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>org.abarhub.crypt.App</mainClass>
+							<mainClass>org.abarhub.angerona.App</mainClass>
 							<classpathPrefix>lib/</classpathPrefix>
 						</manifest>
 					</archive>

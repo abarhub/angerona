@@ -80,6 +80,11 @@ public class App
                 logger.info("Abandon démarrage");
                 break;
             }
+            else
+            {
+                logger.info("Abandon démarrage bouton fermé");
+                break;
+            }
         }
         
     }
@@ -99,8 +104,9 @@ public class App
                 logger.error(ex.getLocalizedMessage(), ex);
             }
         }
-        tmp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        tmp.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	tmp.setLocationRelativeTo(null);
+        tmp.addWindowListener(tmp);
         tmp.setVisible(true);
     }
     
