@@ -1,5 +1,6 @@
 package org.abarhub.crypt;
 
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.security.*;
@@ -96,9 +97,12 @@ public class App
 
     private static void test2() {
         Traitement tr;
+        Console console = System.console();
         try {
         tr=new Traitement();
-            tr.initialise_keystore("abc".toCharArray());
+        char[] passwordChars = console.readPassword();
+        String passwordString = new String(passwordChars);
+            tr.initialise_keystore(passwordString.toCharArray());
         } catch (GeneralSecurityException | IOException ex) {
             //Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
             logger.error(ex.getLocalizedMessage(), ex);
