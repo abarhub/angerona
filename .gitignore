@@ -1,1 +1,6 @@
 target/
+/backup/
+/exec/
+/data/
+/log/
+/example.log
