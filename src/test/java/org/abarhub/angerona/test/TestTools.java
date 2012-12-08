@@ -2,10 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.abarhub.crypt;
+package org.abarhub.angerona.test;
 
 import junit.framework.TestCase;
-import org.abarhub.crypt.security.Tools;
+import org.abarhub.angerona.security.Tools;
 
 /**
  *

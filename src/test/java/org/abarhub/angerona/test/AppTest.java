@@ -1,4 +1,4 @@
-package org.abarhub.crypt;
+package org.abarhub.angerona.test;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

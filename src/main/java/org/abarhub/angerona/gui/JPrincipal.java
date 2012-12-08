@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.abarhub.crypt.gui;
+package org.abarhub.angerona.gui;
 
 import java.io.IOException;
 import java.security.*;
@@ -13,9 +13,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
-import org.abarhub.crypt.security.KeyStoreHashException;
-import org.abarhub.crypt.security.Tools;
-import org.abarhub.crypt.security.Traitement;
+import org.abarhub.angerona.security.KeyStoreHashException;
+import org.abarhub.angerona.security.Tools;
+import org.abarhub.angerona.security.Traitement;
 import org.apache.commons.codec.DecoderException;
 import org.bouncycastle.crypto.DataLengthException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
