@@ -5,12 +5,11 @@
 package org.abarhub.angerona.security;
 
 /**
- *
  * @author abarret
  */
 public class KeyStoreHashException extends Exception {
-    
-    public KeyStoreHashException(){
-        
-    }
+
+	public KeyStoreHashException() {
+
+	}
 }

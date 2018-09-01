@@ -5,12 +5,11 @@
 package org.abarhub.angerona.security;
 
 /**
- *
  * @author abarret
  */
 public class DataCrypteHashException extends Exception {
-    
-    public DataCrypteHashException(){
-        
-    }
+
+	public DataCrypteHashException() {
+
+	}
 }
