@@ -121,7 +121,7 @@ public class Tools {
 		return true;
 	}
 
-	static void ecriture(Path p, List<String> list) throws IOException {
+	public static void ecriture(Path p, List<String> list) throws IOException {
 		Files.write(p, list, Charset.forName("UTF-8"),
 				StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
 	}

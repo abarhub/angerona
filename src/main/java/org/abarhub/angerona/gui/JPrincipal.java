@@ -5,8 +5,8 @@
 package org.abarhub.angerona.gui;
 
 import org.abarhub.angerona.exception.KeyStoreHashException;
-import org.abarhub.angerona.utils.Tools;
 import org.abarhub.angerona.security.Traitement;
+import org.abarhub.angerona.utils.Tools;
 import org.apache.commons.codec.DecoderException;
 import org.bouncycastle.crypto.DataLengthException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
@@ -24,9 +24,11 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,7 +38,7 @@ import java.util.Random;
  */
 public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 
-	final static Logger logger = LoggerFactory.getLogger(JPrincipal.class);
+	final static Logger LOGGER = LoggerFactory.getLogger(JPrincipal.class);
 
 	private char password[];
 	// Variables declaration - do not modify//GEN-BEGIN:variables
@@ -61,7 +63,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 		initComponents();
 		this.password = password;
 		if (!lecture_fichier()) {
-			logger.error("Erreur pour décrypter les fichiers au démarrage");
+			LOGGER.error("Erreur pour décrypter les fichiers au démarrage");
 			erreur("Erreur pour accéder aux fichiers");
 			System.exit(1);
 		}
@@ -199,33 +201,43 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 			//System.out.println("s2="+s2+"!");
 			if (!s.equals(s2)) {
 				erreur("Erreur pour relire le fichier !");
+			} else {
+				enregistre2(s, password);
 			}
 		} catch (KeyStoreHashException | DecoderException | DataLengthException | InvalidCipherTextException | GeneralSecurityException | IOException ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 			erreur("Erreur:" + ex.getLocalizedMessage());
 		}
 	}//GEN-LAST:event_jButton2ActionPerformed
 
 	private void enregistre2(String s, char[] password) {
 		try {
+			Path fichier = Paths.get("C:\\projet\\angerona\\data/keystore.p12");
+
+			LOGGER.info("Enregistrement de {} ...", fichier);
 			KeyStore keyStore = KeyStore.getInstance("PKCS12");
 			keyStore.load(null, null); // Initialize a blank keystore
-			Random random = new SecureRandom();
+			Random random = Tools.getSecureRandom();
 			byte[] val = new byte[32];
 			random.nextBytes(val);
 			SecretKey key = new SecretKeySpec(val, "AES");
 			//char[] password = "changeit".toCharArray();
 			byte[] salt = new byte[20];
 			random.nextBytes(salt);
-			keyStore.setEntry("test", new KeyStore.SecretKeyEntry(key),
+			keyStore.setEntry("clef_cryptage", new KeyStore.SecretKeyEntry(key),
 					new KeyStore.PasswordProtection(password,
 							"PBEWithHmacSHA512AndAES_128",
 							new PBEParameterSpec(salt, 100_000)));
-			keyStore.store(new FileOutputStream("C:\\projet\\angerona\\data/keystore.p12"), password);
+			//keyStore.store(Files.newOutputStream(fichier,StandardOpenOption.CREATE_NEW,
+			//		StandardOpenOption.TRUNCATE_EXISTING), password);
+			keyStore.store(new FileOutputStream(fichier.toFile()), password);
 
+			LOGGER.info("Enregistrement de {} OK", fichier);
+
+			LOGGER.info("Fichier {} existe : {}", fichier, Files.exists(fichier));
 
 		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
+			LOGGER.error(e.getLocalizedMessage(), e);
 		}
 	}
 
@@ -235,7 +247,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 			tr = new Traitement();
 			tr.initialise_keystore(password);
 		} catch (GeneralSecurityException | IOException ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 			erreur("Erreur:" + ex.getLocalizedMessage());
 		} finally {
 
@@ -268,7 +280,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 					erreur("Impossible de lire le fichier !");
 				}
 			} catch (KeyStoreHashException | DecoderException | DataLengthException | InvalidCipherTextException | GeneralSecurityException | IOException ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
+				LOGGER.error(ex.getLocalizedMessage(), ex);
 				erreur("Erreur:" + ex.getLocalizedMessage());
 			}
 		}
@@ -339,7 +351,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 				jTextArea1.setText(s);
 			}
 		} catch (KeyStoreHashException | DecoderException | DataLengthException | InvalidCipherTextException | GeneralSecurityException | IOException ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 			erreur("Erreur:" + ex.getLocalizedMessage());
 			return false;
 		}
@@ -418,7 +430,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 												pos_traitement_fin,
 												DefaultHighlighter.DefaultPainter);
 									} catch (BadLocationException ex) {
-										logger.error("Erreur:" + ex.getLocalizedMessage(), ex);
+										LOGGER.error("Erreur:" + ex.getLocalizedMessage(), ex);
 									}
 								}
 								jTextArea1.setCaretPosition(new_pos);
@@ -429,7 +441,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 			} else {
 				erreur("Impossible de trouver le texte : " + str_recherche);
 			}
-			logger.info("pos=" + pos);
+			LOGGER.info("pos=" + pos);
 		}
 	}
 
