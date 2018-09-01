@@ -4,7 +4,12 @@
  */
 package org.abarhub.angerona.gui;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.abarhub.angerona.exception.KeyStoreHashException;
+import org.abarhub.angerona.json.ByteArraySerializer;
+import org.abarhub.angerona.json.DateSerializer;
+import org.abarhub.angerona.security.ConfigCrypt;
 import org.abarhub.angerona.security.Traitement;
 import org.abarhub.angerona.utils.Tools;
 import org.apache.commons.codec.DecoderException;
@@ -24,12 +29,14 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -235,6 +242,26 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 			LOGGER.info("Enregistrement de {} OK", fichier);
 
 			LOGGER.info("Fichier {} existe : {}", fichier, Files.exists(fichier));
+
+			ConfigCrypt configCrypt = new ConfigCrypt();
+			configCrypt.setKeystoreAlgo("PKCS12");
+			configCrypt.setSecretKeyCryptage("AES");
+			configCrypt.setSecretKeyEntry("clef_cryptage");
+			configCrypt.setProtectionAlgo("PBEWithHmacSHA512AndAES_128");
+			configCrypt.setProtectionIteration(100_000);
+			configCrypt.setDateCreation(new Date());
+			configCrypt.setKeyIv(salt);
+
+			GsonBuilder gsonBuilder = new GsonBuilder();
+			gsonBuilder.registerTypeAdapter(Date.class, new DateSerializer());
+			gsonBuilder.registerTypeAdapter(byte[].class, new ByteArraySerializer());
+
+			Gson gson;
+			gson = gsonBuilder.create();
+			//gson = new Gson();
+			String json = gson.toJson(configCrypt);
+
+			Files.write(fichier.getParent().resolve("param.json"), json.getBytes(StandardCharsets.UTF_8));
 
 		} catch (Exception e) {
 			LOGGER.error(e.getLocalizedMessage(), e);
