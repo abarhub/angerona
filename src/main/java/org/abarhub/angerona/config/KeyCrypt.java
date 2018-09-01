@@ -1,25 +1,13 @@
-package org.abarhub.angerona.security;
+package org.abarhub.angerona.config;
 
-import java.util.Date;
+public class KeyCrypt {
 
-public class ConfigCrypt {
-
-	private String keystoreAlgo;
 	private String secretKeyCryptage;
 	private String secretKeyEntry;
 	private String protectionAlgo;
 	private long protectionIteration;
 	private String keystoreFilename;
 	private byte[] keyIv;
-	private Date dateCreation;
-
-	public String getKeystoreAlgo() {
-		return keystoreAlgo;
-	}
-
-	public void setKeystoreAlgo(String keystoreAlgo) {
-		this.keystoreAlgo = keystoreAlgo;
-	}
 
 	public String getSecretKeyCryptage() {
 		return secretKeyCryptage;
@@ -67,13 +55,5 @@ public class ConfigCrypt {
 
 	public void setKeyIv(byte[] keyIv) {
 		this.keyIv = keyIv;
-	}
-
-	public Date getDateCreation() {
-		return dateCreation;
-	}
-
-	public void setDateCreation(Date dateCreation) {
-		this.dateCreation = dateCreation;
 	}
 }

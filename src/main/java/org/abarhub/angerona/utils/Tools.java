@@ -4,6 +4,10 @@
  */
 package org.abarhub.angerona.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.abarhub.angerona.json.ByteArraySerializer;
+import org.abarhub.angerona.json.LocalDateTimeSerializer;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
@@ -16,6 +20,7 @@ import java.nio.file.StandardOpenOption;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -124,5 +129,13 @@ public class Tools {
 	public static void ecriture(Path p, List<String> list) throws IOException {
 		Files.write(p, list, Charset.forName("UTF-8"),
 				StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+	}
+
+	public static Gson createGson(){
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
+		gsonBuilder.registerTypeAdapter(byte[].class, new ByteArraySerializer());
+
+		return gsonBuilder.create();
 	}
 }

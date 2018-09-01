@@ -5,11 +5,9 @@
 package org.abarhub.angerona.gui;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.abarhub.angerona.config.ConfigCrypt;
+import org.abarhub.angerona.config.ConfigFactory;
 import org.abarhub.angerona.exception.KeyStoreHashException;
-import org.abarhub.angerona.json.ByteArraySerializer;
-import org.abarhub.angerona.json.DateSerializer;
-import org.abarhub.angerona.security.ConfigCrypt;
 import org.abarhub.angerona.security.Traitement;
 import org.abarhub.angerona.utils.Tools;
 import org.apache.commons.codec.DecoderException;
@@ -36,7 +34,6 @@ import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -243,21 +240,25 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 
 			LOGGER.info("Fichier {} existe : {}", fichier, Files.exists(fichier));
 
-			ConfigCrypt configCrypt = new ConfigCrypt();
-			configCrypt.setKeystoreAlgo("PKCS12");
-			configCrypt.setSecretKeyCryptage("AES");
-			configCrypt.setSecretKeyEntry("clef_cryptage");
-			configCrypt.setProtectionAlgo("PBEWithHmacSHA512AndAES_128");
-			configCrypt.setProtectionIteration(100_000);
-			configCrypt.setDateCreation(new Date());
-			configCrypt.setKeyIv(salt);
+			ConfigCrypt configCrypt;// = new ConfigCrypt();
+//			configCrypt.setDateCreation(new Date());
+//			configCrypt.setKeystoreAlgo("PKCS12");
+//			KeyCrypt keyCrypt = new KeyCrypt();
+//			keyCrypt.setSecretKeyCryptage("AES");
+//			keyCrypt.setSecretKeyEntry("clef_cryptage");
+//			keyCrypt.setProtectionAlgo("PBEWithHmacSHA512AndAES_128");
+//			keyCrypt.setProtectionIteration(100_000);
+//			keyCrypt.setKeyIv(salt);
+//			configCrypt.setKeyCrypt(keyCrypt);
+			configCrypt = ConfigFactory.createNewConfigCrypt(salt);
 
-			GsonBuilder gsonBuilder = new GsonBuilder();
-			gsonBuilder.registerTypeAdapter(Date.class, new DateSerializer());
-			gsonBuilder.registerTypeAdapter(byte[].class, new ByteArraySerializer());
+			//GsonBuilder gsonBuilder = new GsonBuilder();
+			//gsonBuilder.registerTypeAdapter(Date.class, new LocalDateTimeSerializer());
+			//gsonBuilder.registerTypeAdapter(byte[].class, new ByteArraySerializer());
 
 			Gson gson;
-			gson = gsonBuilder.create();
+			//gson = gsonBuilder.create();
+			gson = Tools.createGson();
 			//gson = new Gson();
 			String json = gson.toJson(configCrypt);
 
