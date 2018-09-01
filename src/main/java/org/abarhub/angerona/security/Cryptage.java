@@ -12,6 +12,7 @@ import org.apache.commons.codec.DecoderException;
 import org.bouncycastle.crypto.DataLengthException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
@@ -41,7 +42,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class Cryptage {
 
-	final static org.slf4j.Logger logger = LoggerFactory.getLogger(Cryptage.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(Cryptage.class);
 
 	private static final String CLEF_CRYPTAGE = "clef_cryptage";
 	private static final String FormatString = "UTF-8";
@@ -236,7 +237,7 @@ public class Cryptage {
 			key_store0 = KeyStore.getInstance(KeyStoreFormat, "BC");
 			key_store0.load(new FileInputStream(KeyStoreFile()), password);
 		} catch (GeneralSecurityException | IOException ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 			res.addError(ex.getLocalizedMessage());
 		}
 		return res;
@@ -255,7 +256,7 @@ public class Cryptage {
             d=new Date();
             out2.printf("%tY-%tm-%td %tl-%tM %tp %s\n",d,d,d,d,d,d ,msg);
         }*/
-		logger.info(msg);
+		LOGGER.info(msg);
 	}
 
 	private void enregistre_hash(byte[] texte, File f) throws IOException, GeneralSecurityException {
@@ -316,7 +317,7 @@ public class Cryptage {
 			log("Backup termine");
 
 		} catch (IOException ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 		log("Fin de backup");
 	}
