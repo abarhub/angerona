@@ -4,7 +4,7 @@
  */
 package org.abarhub.angerona.test;
 
-import org.abarhub.angerona.security.Tools;
+import org.abarhub.angerona.utils.Tools;
 import org.apache.commons.codec.DecoderException;
 import org.junit.Test;
 

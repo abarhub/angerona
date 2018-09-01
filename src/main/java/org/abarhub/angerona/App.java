@@ -1,8 +1,8 @@
 package org.abarhub.angerona;
 
 import org.abarhub.angerona.gui.JPrincipal;
-import org.abarhub.angerona.security.Resultat;
-import org.abarhub.angerona.security.Tools;
+import org.abarhub.angerona.utils.Resultat;
+import org.abarhub.angerona.utils.Tools;
 import org.abarhub.angerona.security.Traitement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

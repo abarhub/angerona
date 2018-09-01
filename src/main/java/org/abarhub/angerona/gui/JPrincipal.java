@@ -4,8 +4,8 @@
  */
 package org.abarhub.angerona.gui;
 
-import org.abarhub.angerona.security.KeyStoreHashException;
-import org.abarhub.angerona.security.Tools;
+import org.abarhub.angerona.exception.KeyStoreHashException;
+import org.abarhub.angerona.utils.Tools;
 import org.abarhub.angerona.security.Traitement;
 import org.apache.commons.codec.DecoderException;
 import org.bouncycastle.crypto.DataLengthException;

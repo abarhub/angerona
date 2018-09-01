@@ -4,7 +4,7 @@
  */
 package org.abarhub.angerona.test;
 
-import org.abarhub.angerona.security.Tools;
+import org.abarhub.angerona.utils.Tools;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
