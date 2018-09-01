@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class ConfigFactory {
 
-	public static ConfigCrypt createNewConfigCrypt(byte[] salt) {
+	public static ConfigCrypt createNewConfigCrypt() {
 		ConfigCrypt configCrypt = new ConfigCrypt();
 		configCrypt.setDateCreation(LocalDateTime.now());
 		configCrypt.setKeystoreAlgo("PKCS12");
@@ -13,7 +13,6 @@ public class ConfigFactory {
 		keyCrypt.setSecretKeyEntry("clef_cryptage");
 		keyCrypt.setProtectionAlgo("PBEWithHmacSHA512AndAES_128");
 		keyCrypt.setProtectionIteration(100_000);
-		keyCrypt.setKeyIv(salt);
 		configCrypt.setKeyCrypt(keyCrypt);
 		return configCrypt;
 	}

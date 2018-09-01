@@ -19,7 +19,7 @@ import java.security.GeneralSecurityException;
 /**
  * @author abarret
  */
-public class Traitement {
+public class Traitement implements ITraitement {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(Traitement.class);
 
@@ -31,6 +31,7 @@ public class Traitement {
 		crypt = new Cryptage(config);
 	}
 
+	@Override
 	public void enregistre(String s, char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException {
 		log("enregistrement");
 		crypt.setContenu(s);
@@ -39,6 +40,7 @@ public class Traitement {
 		//System.out.println("Ecriture terminé");
 	}
 
+	@Override
 	public void enregistre_changement_clef(String s, char new_password[]) throws GeneralSecurityException, IOException, DataLengthException, InvalidCipherTextException, DecoderException, KeyStoreHashException {
 
 		log("debut change clef ...");
@@ -52,6 +54,7 @@ public class Traitement {
 		log("fin change clef");
 	}
 
+	@Override
 	public String lecture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, DecoderException {
 		String s;
 
@@ -61,19 +64,22 @@ public class Traitement {
 		return s;
 	}
 
+	@Override
 	public void initialise_keystore(char[] key) throws GeneralSecurityException, IOException {
 		crypt.init_keystore(key);
 	}
 
+	@Override
 	public void load_keystore(char[] key) throws GeneralSecurityException, IOException, DecoderException, KeyStoreHashException {
 		crypt.loadKeyStore(key);
 	}
 
+	@Override
 	public Resultat verifie_password(char[] password) {
 		return crypt.verifie_password(password);
 	}
 
-	public void log(String msg) throws IOException {
+	private void log(String msg) throws IOException {
 		LOGGER.info(msg);
 	}
 }

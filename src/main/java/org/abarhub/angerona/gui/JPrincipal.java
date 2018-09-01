@@ -9,6 +9,7 @@ import org.abarhub.angerona.config.ConfigCrypt;
 import org.abarhub.angerona.config.ConfigFactory;
 import org.abarhub.angerona.exception.KeyStoreHashException;
 import org.abarhub.angerona.security.Traitement;
+import org.abarhub.angerona.security.Traitement2;
 import org.abarhub.angerona.utils.Tools;
 import org.apache.commons.codec.DecoderException;
 import org.bouncycastle.crypto.DataLengthException;
@@ -214,7 +215,12 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 		}
 	}//GEN-LAST:event_jButton2ActionPerformed
 
-	private void enregistre2(String s, char[] password) {
+	private void enregistre2(String s, char[] password) throws IOException, GeneralSecurityException, InvalidCipherTextException {
+		Traitement2 traitement2=new Traitement2();
+		traitement2.enregistre(s,password);
+	}
+
+	private void enregistre20(String s, char[] password) {
 		try {
 			Path fichier = Paths.get("C:\\projet\\angerona\\data/keystore.p12");
 
@@ -250,7 +256,8 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 //			keyCrypt.setProtectionIteration(100_000);
 //			keyCrypt.setKeyIv(salt);
 //			configCrypt.setKeyCrypt(keyCrypt);
-			configCrypt = ConfigFactory.createNewConfigCrypt(salt);
+			configCrypt = ConfigFactory.createNewConfigCrypt();
+			configCrypt.getKeyCrypt().setKeyIv(salt);
 
 			//GsonBuilder gsonBuilder = new GsonBuilder();
 			//gsonBuilder.registerTypeAdapter(Date.class, new LocalDateTimeSerializer());
