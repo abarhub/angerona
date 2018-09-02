@@ -6,8 +6,10 @@ import org.abarhub.angerona.config.ConfigCrypt;
 import org.abarhub.angerona.exception.CoffreFortException;
 import org.abarhub.angerona.security.Cryptage2;
 import org.abarhub.angerona.security.Traitement;
+import org.abarhub.angerona.security.TypeHash;
 import org.abarhub.angerona.utils.Config;
 import org.abarhub.angerona.utils.Tools;
+import org.apache.commons.codec.DecoderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,10 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,12 +39,12 @@ public class ToolsCoffreFort {
 	private static final String PARAM_JSON_FILENAME = "param.json";
 	private static final String KEYSTORE_P12_FILENAME = "keystore.p12";
 
-	public void save(CoffreFort coffreFort, Path fichier) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
+	public void save(CoffreFort coffreFort, Path fichier) throws IOException, GeneralSecurityException {
 		coffreFort = Preconditions.checkNotNull(coffreFort);
 		fichier = Preconditions.checkNotNull(fichier);
 		Preconditions.checkNotNull(coffreFort.getKeystorePassword());
 
-		LOGGER.info("sauvegarde du keystore ...");
+		LOGGER.info("sauvegarde du coffre ...");
 
 		//Config config=new Config();
 
@@ -92,10 +92,34 @@ public class ToolsCoffreFort {
 				}
 
 				writeNextFile(out, filename, buf);
+
+				out.finish();
+				out.flush();
 			}
 		}
 
-		LOGGER.info("sauvegarde du keystore OK");
+		LOGGER.info("enregistrement du hash ...");
+
+		byte[] buf = Files.readAllBytes(fichier);
+
+		Path p = getPathHash(fichier);
+
+		enregistreHash(buf, p);
+
+		LOGGER.info("enregistrement du hash OK");
+
+		LOGGER.info("sauvegarde du coffre OK");
+	}
+
+	private Path getPathHash(Path fichier) {
+		Path p;
+		String filename = fichier.getFileName().toString();
+		int i = filename.lastIndexOf('.');
+		if (i > 0) {
+			filename = filename.substring(0, i) + ".asc";
+		}
+		p = fichier.resolve("../" + filename).normalize();
+		return p;
 	}
 
 	private void writeNextFile(ZipOutputStream out, String filename, byte[] buf) throws IOException {
@@ -112,9 +136,23 @@ public class ToolsCoffreFort {
 		}
 	}
 
-	public CoffreFort load(Path fichier, char[] key) throws IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, CoffreFortException {
+	private void enregistreHash(byte[] texte, Path f) throws IOException, GeneralSecurityException {
+		byte[] buf;
+		List<String> liste;
+		liste = new ArrayList<>();
+		for (TypeHash t : TypeHash.values()) {
+			buf = Tools.calcul_hash(texte, t.getAlgo());
+			liste.add(t.getNom() + "=" + Tools.convHexString(buf));
+		}
+		Files.write(f, liste);
+	}
+
+	public CoffreFort load(Path fichier, char[] key) throws IOException, GeneralSecurityException,
+			CoffreFortException {
 
 		LOGGER.info("chargement du coffre fort ...");
+
+		verifieHash(fichier);
 
 		CoffreFort coffreFort = new CoffreFort();
 		coffreFort.setKeystorePassword(key);
@@ -137,26 +175,6 @@ public class ToolsCoffreFort {
 
 						contenuZip.put(entryName, buf);
 
-//						if (entryName.equalsIgnoreCase(MESSAGE_FILENAME)) {
-//							byte[] buf = readContenu(zis);
-//							Message message = new Message();
-//							message.setMessageCrypte(buf);
-//							coffreFort.setMessage(message);
-//						} else if (entryName.equalsIgnoreCase(PARAM_JSON_FILENAME)) {
-//							Gson gson;
-//							ConfigCrypt configCrypt;
-//							byte[] buf = readContenu(zis);
-//							gson = Tools.createGson();
-//							configCrypt = gson.fromJson(new String(buf, StandardCharsets.UTF_8), ConfigCrypt.class);
-//							coffreFort.setConfig(configCrypt);
-//						} else if (entryName.equalsIgnoreCase(KEYSTORE_P12_FILENAME)) {
-//							byte[] buf = readContenu(zis);
-//							KeyStore keyStore = KeyStore.getInstance("PKCS12");
-//							keyStore.load(new ByteArrayInputStream(buf), key);
-//							coffreFort.setKeystore(keyStore);
-//						} else {
-//							LOGGER.info("Fichier {} inclu dans le zip ignore");
-//						}
 					} else {
 						LOGGER.error("Le zip contient une entrée null");
 					}
@@ -206,6 +224,87 @@ public class ToolsCoffreFort {
 
 		return coffreFort;
 	}
+
+	private void verifieHash(Path fichier) throws IOException, CoffreFortException {
+		byte[] buf2 = Files.readAllBytes(fichier);
+
+		Path fichierHash = getPathHash(fichier);
+
+		try {
+			if (!Files.exists(fichierHash)) {
+				LOGGER.error("Le hash du coffre fort est absent");
+			} else if (!verifie(fichierHash, buf2)) {
+				LOGGER.error("Le hash du coffre fort est invalide");
+				throw new CoffreFortException("Le hash du coffre fort est invalide");
+			}
+		} catch (Exception e) {
+			LOGGER.error("Erreur pour calculer le hash du coffre fort", e);
+			throw new CoffreFortException("Erreur pour calculer le hash du coffre fort", e);
+		}
+	}
+
+
+	private boolean verifie(Path fichierHash, byte[] toByteArray) throws IOException, DecoderException, GeneralSecurityException {
+		List<String> lignes;
+		if (Files.exists(fichierHash)) {
+			LOGGER.info("Vérification du fichier hash : {}", fichierHash);
+			lignes = Files.readAllLines(fichierHash, StandardCharsets.UTF_8);
+			if (!verifyHash(toByteArray, lignes)) {
+				LOGGER.info("Vérification hash Ok");
+				return true;
+			} else {
+				LOGGER.info("Vérification hash KO");
+				return false;
+			}
+		} else {
+			LOGGER.info("Vérification hash erreur : pas présent");
+			return false;
+		}
+	}
+
+
+	protected boolean verifyHash(byte[] toByteArray, List<String> lignes) throws DecoderException, IOException, GeneralSecurityException {
+		TypeHash type_hash;
+		String s2;
+		byte[] buf;
+		byte[] buf2;
+		if (lignes != null && !lignes.isEmpty()) {
+			for (String s : lignes) {
+				if (s != null && !s.isEmpty()) {
+					s = s.trim();
+					if (s != null && s.length() > 0 && s.contains("=")) {
+						type_hash = null;
+						for (TypeHash t : TypeHash.values()) {
+							if (s.startsWith(t.getNom() + "=")) {
+								type_hash = t;
+								break;
+							}
+						}
+						if (type_hash != null) {
+							s2 = s.substring((type_hash.getNom() + "=").length());
+							if (s2.isEmpty()) {
+								LOGGER.info("Vérification hash erreur : hash vide");
+								return true;
+							}
+							buf = Tools.convHexByte(s2);
+							buf2 = Tools.calcul_hash(toByteArray, type_hash.getAlgo());
+							if (buf == null || buf.length == 0) {
+								LOGGER.info("Vérification hash erreur : hash vide");
+								return true;
+							} else if (!Tools.egaux(buf, buf2)) {
+								LOGGER.info("Vérification hash erreur : hash différent");
+								return true;
+							} else {
+								LOGGER.info("Vérification hash " + type_hash + " : ok");
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 
 	private byte[] readContenu(ZipInputStream zis) throws IOException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -264,7 +363,8 @@ public class ToolsCoffreFort {
 						}
 						zos.closeEntry();
 
-						if (filename.endsWith("coffrefort.zip")) {
+						if (filename.endsWith("coffrefort.zip")
+								|| filename.endsWith("coffrefort.asc")) {
 							// on ne supprime pas ce fichier
 						} else if (filename.endsWith(".p12")
 								|| filename.endsWith(".json")
@@ -272,7 +372,7 @@ public class ToolsCoffreFort {
 								|| filename.endsWith(".asc")
 								|| filename.endsWith(".bin")
 								|| filename.endsWith(".crpt")
-								|| filename.endsWith(".bin")
+								|| filename.endsWith(".7z")
 								|| filename.endsWith(".bin")) {
 							fichierASupprimer.add(f2);
 						}
@@ -333,16 +433,30 @@ public class ToolsCoffreFort {
 			LOGGER.info("convertion OK");
 
 		} else {
-			Path fichierAncienFormat=Paths.get("data/keystore.bin");
-			if(Files.exists(fichierAncienFormat)){
+			if (existeAnciensFichiers()) {
 
 				LOGGER.info("backup des fichiers de l'ancien format ...");
 
-				ToolsCoffreFort toolsCoffreFort=new ToolsCoffreFort();
+				ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
 				toolsCoffreFort.backup();
 
 				LOGGER.info("backup des fichiers de l'ancien format ok");
 			}
 		}
+	}
+
+	private boolean existeAnciensFichiers() {
+		//p12
+		Path fichierAncienFormat = Paths.get("data/keystore.bin");
+		if (Files.exists(fichierAncienFormat)) {
+			return true;
+		}
+
+		fichierAncienFormat = Paths.get("data/keystore.p12");
+		if (Files.exists(fichierAncienFormat)) {
+			return true;
+		}
+
+		return false;
 	}
 }
