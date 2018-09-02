@@ -8,6 +8,7 @@ public class ConfigCrypt {
 	private String keystoreAlgo;
 	private LocalDateTime dateCreation;
 	private KeyCrypt keyCrypt;
+	private int version;
 
 	public String getKeystoreAlgo() {
 		return keystoreAlgo;
@@ -31,5 +32,13 @@ public class ConfigCrypt {
 
 	public void setKeyCrypt(KeyCrypt keyCrypt) {
 		this.keyCrypt = keyCrypt;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
 	}
 }

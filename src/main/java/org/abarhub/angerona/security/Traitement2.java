@@ -1,6 +1,9 @@
 package org.abarhub.angerona.security;
 
 import com.google.gson.Gson;
+import org.abarhub.angerona.coffrefort.CoffreFort;
+import org.abarhub.angerona.coffrefort.Message;
+import org.abarhub.angerona.coffrefort.ToolsCoffreFort;
 import org.abarhub.angerona.config.ConfigCrypt;
 import org.abarhub.angerona.config.ConfigFactory;
 import org.abarhub.angerona.exception.KeyStoreHashException;
@@ -26,7 +29,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.Random;
 
-public class Traitement2 implements ITraitement {
+public class Traitement2 extends Traitement implements ITraitement {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(Traitement2.class);
 
@@ -43,7 +46,7 @@ public class Traitement2 implements ITraitement {
 
 	private void enregistre2(String s, char[] password) {
 		try {
-			Path fichier = Paths.get(config.getRep_data().getAbsolutePath(),"keystore.p12");
+			Path fichier = Paths.get(config.getRep_data().getAbsolutePath(), "keystore.p12");
 
 			LOGGER.info("Enregistrement de {} ...", fichier);
 			KeyStore keyStore = KeyStore.getInstance("PKCS12");
@@ -70,6 +73,7 @@ public class Traitement2 implements ITraitement {
 			ConfigCrypt configCrypt;
 			configCrypt = ConfigFactory.createNewConfigCrypt();
 			configCrypt.getKeyCrypt().setKeyIv(salt);
+			configCrypt.setVersion(2);
 
 			Gson gson;
 			//gson = gsonBuilder.create();
@@ -79,34 +83,47 @@ public class Traitement2 implements ITraitement {
 
 			Files.write(fichier.getParent().resolve("param.json"), json.getBytes(StandardCharsets.UTF_8));
 
+			CoffreFort coffreFort = new CoffreFort();
+			coffreFort.setConfig(configCrypt);
+			coffreFort.setKeystore(keyStore);
+			Message message = new Message();
+			message.setMessageCrypte(s.getBytes(StandardCharsets.UTF_8));
+			coffreFort.setMessage(message);
+			coffreFort.setKeystorePassword(password);
+
+			Path fichierZip = Paths.get(config.getRep_data().getAbsolutePath(), "coffrefort.zip");
+
+			ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
+			toolsCoffreFort.save(coffreFort, fichierZip);
+
 		} catch (Exception e) {
 			LOGGER.error(e.getLocalizedMessage(), e);
 		}
 	}
 
 
-	@Override
-	public void enregistre_changement_clef(String s, char[] new_password) throws GeneralSecurityException, IOException, DataLengthException, InvalidCipherTextException, DecoderException, KeyStoreHashException {
-
-	}
-
-	@Override
-	public String lecture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, DecoderException {
-		return null;
-	}
-
-	@Override
-	public void initialise_keystore(char[] key) throws GeneralSecurityException, IOException {
-
-	}
-
-	@Override
-	public void load_keystore(char[] key) throws GeneralSecurityException, IOException, DecoderException, KeyStoreHashException {
-
-	}
-
-	@Override
-	public Resultat verifie_password(char[] password) {
-		return null;
-	}
+//	@Override
+//	public void enregistre_changement_clef(String s, char[] new_password) throws GeneralSecurityException, IOException, DataLengthException, InvalidCipherTextException, DecoderException, KeyStoreHashException {
+//
+//	}
+//
+//	@Override
+//	public String lecture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, DecoderException {
+//		return null;
+//	}
+//
+//	@Override
+//	public void initialise_keystore(char[] key) throws GeneralSecurityException, IOException {
+//
+//	}
+//
+//	@Override
+//	public void load_keystore(char[] key) throws GeneralSecurityException, IOException, DecoderException, KeyStoreHashException {
+//
+//	}
+//
+//	@Override
+//	public Resultat verifie_password(char[] password) {
+//		return null;
+//	}
 }

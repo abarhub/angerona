@@ -28,7 +28,11 @@ public class Traitement implements ITraitement {
 
 	public Traitement() throws IOException {
 		config = new Config();
-		crypt = new Cryptage(config);
+		crypt = getCrypt();
+	}
+
+	protected Cryptage getCrypt() {
+		return new Cryptage(config);
 	}
 
 	@Override

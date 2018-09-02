@@ -1,4 +1,4 @@
-package org.abarhub.angerona.security;
+package org.abarhub.angerona.coffrefort;
 
 import org.abarhub.angerona.config.ConfigCrypt;
 
@@ -7,24 +7,17 @@ import java.security.KeyStore;
 
 public class CoffreFort {
 
-	private byte[] messageCrypte;
+	private Message message;
 	private KeyStore keystore;
+	private char[] keystorePassword;
 	private ConfigCrypt config;
 
-	public void save(Path fichier){
-
+	public Message getMessage() {
+		return message;
 	}
 
-	public void load(Path fichier){
-
-	}
-
-	public byte[] getMessageCrypte() {
-		return messageCrypte;
-	}
-
-	public void setMessageCrypte(byte[] messageCrypte) {
-		this.messageCrypte = messageCrypte;
+	public void setMessage(Message message) {
+		this.message = message;
 	}
 
 	public KeyStore getKeystore() {
@@ -41,5 +34,13 @@ public class CoffreFort {
 
 	public void setConfig(ConfigCrypt config) {
 		this.config = config;
+	}
+
+	public char[] getKeystorePassword() {
+		return keystorePassword;
+	}
+
+	public void setKeystorePassword(char[] keystorePassword) {
+		this.keystorePassword = keystorePassword;
 	}
 }
