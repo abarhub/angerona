@@ -14,6 +14,7 @@ public class ConfigFactory {
 		keyCrypt.setProtectionAlgo("PBEWithHmacSHA512AndAES_128");
 		keyCrypt.setProtectionIteration(100_000);
 		configCrypt.setKeyCrypt(keyCrypt);
+		configCrypt.setVersion(2);
 		return configCrypt;
 	}
 

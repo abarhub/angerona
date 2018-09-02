@@ -109,7 +109,16 @@ public class Traitement2 extends Traitement implements ITraitement {
 		}
 	}
 
+	@Override
+	protected void init(char[] password) {
+		try {
+			crypt.loadKeyStore(password);
+		} catch (Exception e) {
+			LOGGER.error("Erreur", e);
+			throw new RuntimeException(e);
+		}
 
+	}
 //	@Override
 //	public void enregistre_changement_clef(String s, char[] new_password) throws GeneralSecurityException, IOException, DataLengthException, InvalidCipherTextException, DecoderException, KeyStoreHashException {
 //

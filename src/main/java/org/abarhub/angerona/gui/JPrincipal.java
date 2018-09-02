@@ -5,6 +5,7 @@
 package org.abarhub.angerona.gui;
 
 import com.google.gson.Gson;
+import org.abarhub.angerona.coffrefort.ToolsCoffreFort;
 import org.abarhub.angerona.config.ConfigCrypt;
 import org.abarhub.angerona.config.ConfigFactory;
 import org.abarhub.angerona.exception.KeyStoreHashException;
@@ -195,7 +196,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 		String s, s2;
 		s = jTextArea1.getText();
 		try {
-			tr = new Traitement();
+			tr = Tools.createTraitement();
 
 			tr.load_keystore(password);
 
@@ -279,7 +280,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 	private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
 		Traitement tr;
 		try {
-			tr = new Traitement();
+			tr = Tools.createTraitement();
 			tr.initialise_keystore(password);
 		} catch (GeneralSecurityException | IOException ex) {
 			LOGGER.error(ex.getLocalizedMessage(), ex);
@@ -298,7 +299,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 		pwd = new_password();
 		if (pwd != null && pwd.length > 0) {
 			try {
-				tr = new Traitement();
+				tr = Tools.createTraitement();
 
 				tr.enregistre_changement_clef(s, pwd);
 
@@ -379,12 +380,14 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 		Traitement tr;
 		String s;
 		try {
-			tr = new Traitement();
+			tr = Tools.createTraitement();
 			tr.load_keystore(password);
 			s = tr.lecture(password);
 			if (s != null) {
 				jTextArea1.setText(s);
 			}
+			ToolsCoffreFort toolsCoffreFort=new ToolsCoffreFort();
+			toolsCoffreFort.convertion(password);
 		} catch (Exception ex) {
 			LOGGER.error(ex.getLocalizedMessage(), ex);
 			erreur("Erreur:" + ex.getLocalizedMessage());

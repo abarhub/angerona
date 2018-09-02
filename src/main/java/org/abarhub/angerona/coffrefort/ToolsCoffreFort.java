@@ -4,6 +4,9 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import org.abarhub.angerona.config.ConfigCrypt;
 import org.abarhub.angerona.exception.CoffreFortException;
+import org.abarhub.angerona.security.Cryptage2;
+import org.abarhub.angerona.security.Traitement;
+import org.abarhub.angerona.utils.Config;
 import org.abarhub.angerona.utils.Tools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -273,4 +276,48 @@ public class ToolsCoffreFort {
 		LOGGER.info("Fin de backup");
 	}
 
+	public void convertion(char[] password) throws CoffreFortException {
+		Path coffreFortPath = Paths.get("data/coffrefort.zip");
+		if (!Files.exists(coffreFortPath)) {
+
+			String contenu = null;
+
+			LOGGER.error("convertion ...");
+
+			try {
+				Traitement tr = new Traitement();
+				tr.load_keystore(password);
+				contenu = tr.lecture(password);
+			} catch (Exception e) {
+				LOGGER.error("Erreur pour lire le contenu du fichier", e);
+				throw new CoffreFortException("Erreur pour convertir le fichier");
+			}
+			if (contenu == null) {
+				LOGGER.error("Le contenu du fichier");
+				throw new CoffreFortException("Erreur pour convertir le fichier");
+			}
+
+			try {
+				Cryptage2 cryptage2 = new Cryptage2(new Config());
+
+				cryptage2.init_keystore(password);
+				cryptage2.setContenu(contenu);
+
+				cryptage2.ecriture(password);
+
+			} catch (Exception e) {
+				LOGGER.error("Erreur pour enregistrer le coffre fort", e);
+				throw new CoffreFortException("Erreur pour enregistrer le coffre fort");
+			}
+//			CoffreFort coffreFort=new CoffreFort();
+//			Message message=new Message();
+//			message.setMessage(contenu);
+//			coffreFort.setMessage(message);
+//			coffreFort.setKeystorePassword(password);
+//
+//			save();
+
+			LOGGER.error("convertion OK");
+		}
+	}
 }

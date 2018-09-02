@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import org.abarhub.angerona.coffrefort.CoffreFort;
 import org.abarhub.angerona.coffrefort.Message;
 import org.abarhub.angerona.coffrefort.ToolsCoffreFort;
+import org.abarhub.angerona.config.ConfigCrypt;
+import org.abarhub.angerona.config.ConfigFactory;
 import org.abarhub.angerona.exception.CoffreFortException;
 import org.abarhub.angerona.exception.KeyStoreHashException;
 import org.abarhub.angerona.utils.Config;
@@ -52,6 +54,9 @@ public class Cryptage2 implements ICryptage {
 		if (config.getRep_data() == null) {
 			throw new IllegalArgumentException();
 		}
+		coffreFort = new CoffreFort();
+		coffreFort.setMessage(new Message());
+		coffreFort.setConfig(ConfigFactory.createNewConfigCrypt());
 	}
 
 	@Override
@@ -108,7 +113,7 @@ public class Cryptage2 implements ICryptage {
 		Preconditions.checkNotNull(coffreFort.getMessage());
 		Preconditions.checkNotNull(coffreFort.getMessage().getMessage());
 
-		File f, f2;
+		//File f, f2;
 		Cipher cipher;
 		//BufferedOutputStream out = null;
 		//backup();
@@ -157,7 +162,8 @@ public class Cryptage2 implements ICryptage {
 		if (keyStore == null) {
 			throw new IllegalArgumentException();
 		}
-		Cipher cipher = Cipher.getInstance("AES/CTR/PKCS7Padding", "BC");//new DESEngine();
+		//Cipher cipher = Cipher.getInstance("AES/CTR/PKCS7Padding", "BC");//new DESEngine();
+		Cipher cipher = Cipher.getInstance("AES/CTR/PKCS7Padding");//new DESEngine();
 		//BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(engine));
 		//String keyString="ABCDEF";
 		//byte[] key = keyString.getBytes();
@@ -199,8 +205,12 @@ public class Cryptage2 implements ICryptage {
 		Preconditions.checkNotNull(password, "Le mot de passe ne peut pas être null");
 		Preconditions.checkArgument(password.length > 0, "Le mot de passe ne peut pas être null");
 		Preconditions.checkNotNull(coffreFort);
+		Preconditions.checkNotNull(coffreFort.getConfig());
+
+		ConfigCrypt configCrypt = coffreFort.getConfig();
 
 		KeyStore keyStore = KeyStore.getInstance("PKCS12");
+		//KeyStore keyStore = KeyStore.getInstance("PKCS12","BC");
 		keyStore.load(null, null); // Initialize a blank keystore
 		Random random = Tools.getSecureRandom();
 		byte[] val = new byte[32];
@@ -209,10 +219,12 @@ public class Cryptage2 implements ICryptage {
 		//char[] password = "changeit".toCharArray();
 		byte[] salt = new byte[20];
 		random.nextBytes(salt);
-		keyStore.setEntry("clef_cryptage", new KeyStore.SecretKeyEntry(key),
+		keyStore.setEntry(CLEF_CRYPTAGE, new KeyStore.SecretKeyEntry(key),
 				new KeyStore.PasswordProtection(password,
 						"PBEWithHmacSHA512AndAES_128",
 						new PBEParameterSpec(salt, 100_000)));
+
+		configCrypt.getKeyCrypt().setKeyIv(salt);
 
 		coffreFort.setKeystore(keyStore);
 	}

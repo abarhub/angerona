@@ -114,7 +114,7 @@ public class App {
 		Resultat res = new Resultat();
 		try {
 			Traitement tr;
-			tr = new Traitement();
+			tr = Tools.createTraitement();
 			return tr.verifie_password(password);
 		} catch (IOException ex) {
 			//Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);

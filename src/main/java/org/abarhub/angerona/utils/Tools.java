@@ -10,6 +10,7 @@ import org.abarhub.angerona.json.ByteArrayDeserializer;
 import org.abarhub.angerona.json.ByteArraySerializer;
 import org.abarhub.angerona.json.LocalDateTimeDeserializer;
 import org.abarhub.angerona.json.LocalDateTimeSerializer;
+import org.abarhub.angerona.security.Traitement;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
@@ -142,5 +143,9 @@ public class Tools {
 
 
 		return gsonBuilder.create();
+	}
+
+	public static Traitement createTraitement() throws IOException {
+		return new Traitement();
 	}
 }

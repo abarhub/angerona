@@ -24,8 +24,8 @@ public class Traitement implements ITraitement {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(Traitement.class);
 
-	private ICryptage crypt;
-	private Config config;
+	protected ICryptage crypt;
+	protected Config config;
 
 	public Traitement() throws IOException {
 		config = new Config();
@@ -39,6 +39,7 @@ public class Traitement implements ITraitement {
 	@Override
 	public void enregistre(String s, char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException {
 		log("enregistrement");
+		init(pwd);
 		crypt.setContenu(s);
 		//System.out.println("Ecriture de :"+s);
 		crypt.ecriture(pwd);
@@ -50,6 +51,7 @@ public class Traitement implements ITraitement {
 	public void enregistre_changement_clef(String s, char new_password[]) throws GeneralSecurityException, IOException, DataLengthException, InvalidCipherTextException, DecoderException, KeyStoreHashException, CoffreFortException {
 
 		log("debut change clef ...");
+		init(new_password);
 		crypt.setContenu(s);
 		//System.out.println("changement de clef");
 		crypt.init_keystore(new_password);
@@ -65,6 +67,7 @@ public class Traitement implements ITraitement {
 		String s;
 
 		log("lecture");
+		init(pwd);
 		crypt.lecture(pwd);
 		s = crypt.getContenu();
 		log("lecture ok");
@@ -73,20 +76,27 @@ public class Traitement implements ITraitement {
 
 	@Override
 	public void initialise_keystore(char[] key) throws GeneralSecurityException, IOException {
+		init(key);
 		crypt.init_keystore(key);
 	}
 
 	@Override
 	public void load_keystore(char[] key) throws GeneralSecurityException, IOException, DecoderException, KeyStoreHashException, CoffreFortException {
+		init(key);
 		crypt.loadKeyStore(key);
 	}
 
 	@Override
 	public Resultat verifie_password(char[] password) {
+		init(password);
 		return crypt.verifie_password(password);
 	}
 
 	private void log(String msg) throws IOException {
 		LOGGER.info(msg);
+	}
+
+	protected void init(char[] password)  {
+
 	}
 }
