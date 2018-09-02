@@ -14,8 +14,18 @@ public class ConfigFactory {
 		keyCrypt.setProtectionAlgo("PBEWithHmacSHA512AndAES_128");
 		keyCrypt.setProtectionIteration(100_000);
 		configCrypt.setKeyCrypt(keyCrypt);
+		CiperCrypt ciperCrypt = createCiperCrypt();
+		configCrypt.setCiperCrypt(ciperCrypt);
 		configCrypt.setVersion(2);
 		return configCrypt;
+	}
+
+	public static CiperCrypt createCiperCrypt(){
+		CiperCrypt ciperCrypt = new CiperCrypt();
+		ciperCrypt.setAlgorithme("AES/CTR/PKCS7Padding");
+		ciperCrypt.setProvider("BC");
+		ciperCrypt.setKeyIv(new byte[]{56, -35, 13, 84, 17, 21, 90, 39, 32, 112, 115, 41, -63, 33, -92, 64});
+		return ciperCrypt;
 	}
 
 }

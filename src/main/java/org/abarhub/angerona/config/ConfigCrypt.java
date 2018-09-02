@@ -1,7 +1,6 @@
 package org.abarhub.angerona.config;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class ConfigCrypt {
 
@@ -9,6 +8,7 @@ public class ConfigCrypt {
 	private LocalDateTime dateCreation;
 	private KeyCrypt keyCrypt;
 	private int version;
+	private CiperCrypt ciperCrypt;
 
 	public String getKeystoreAlgo() {
 		return keystoreAlgo;
@@ -40,5 +40,13 @@ public class ConfigCrypt {
 
 	public void setVersion(int version) {
 		this.version = version;
+	}
+
+	public CiperCrypt getCiperCrypt() {
+		return ciperCrypt;
+	}
+
+	public void setCiperCrypt(CiperCrypt ciperCrypt) {
+		this.ciperCrypt = ciperCrypt;
 	}
 }

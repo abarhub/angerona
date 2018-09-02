@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import org.abarhub.angerona.coffrefort.CoffreFort;
 import org.abarhub.angerona.coffrefort.Message;
 import org.abarhub.angerona.coffrefort.ToolsCoffreFort;
+import org.abarhub.angerona.config.CiperCrypt;
 import org.abarhub.angerona.config.ConfigCrypt;
 import org.abarhub.angerona.config.ConfigFactory;
 import org.abarhub.angerona.exception.CoffreFortException;
@@ -150,12 +151,24 @@ public class Cryptage2 implements ICryptage {
 		Preconditions.checkArgument(pwd.length > 0, "Le mot de passe ne peut pas être null");
 		Preconditions.checkNotNull(coffreFort);
 		Preconditions.checkNotNull(coffreFort.getKeystore());
+		Preconditions.checkNotNull(coffreFort.getConfig());
+		//Preconditions.checkNotNull(coffreFort.getConfig().getCiperCrypt());
 
 		KeyStore keyStore = coffreFort.getKeystore();
 		if (keyStore == null) {
 			throw new IllegalArgumentException();
 		}
-		Cipher cipher = Cipher.getInstance("AES/CTR/PKCS7Padding", "BC");//new DESEngine();
+		CiperCrypt ciperCrypt=coffreFort.getConfig().getCiperCrypt();
+		if(ciperCrypt==null){
+			ciperCrypt=ConfigFactory.createCiperCrypt();
+			coffreFort.getConfig().setCiperCrypt(ciperCrypt);
+		}
+		Cipher cipher;
+		if(ciperCrypt.getProvider()==null||ciperCrypt.getProvider().trim().isEmpty()){
+			cipher = Cipher.getInstance(ciperCrypt.getAlgorithme());
+		} else {
+			cipher = Cipher.getInstance(ciperCrypt.getAlgorithme(), ciperCrypt.getProvider());//new DESEngine();
+		}
 		//Cipher cipher = Cipher.getInstance("AES/CTR/PKCS7Padding");//new DESEngine();
 		//BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(engine));
 		//String keyString="ABCDEF";
@@ -164,7 +177,11 @@ public class Cryptage2 implements ICryptage {
 		//char[] pwd="abc".toCharArray();
 		//byte clef[]=new byte[]{30,62,-23,41,27,8,61,6,70,111,-109,-39,88,-7,48,0};
 		byte ivBytes[] = new byte[]{56, -35, 13, 84, 17, 21, 90, 39, 32, 112, 115, 41, -63, 33, -92, 64};
-		Key clef = keyStore.getKey(CLEF_CRYPTAGE, pwd);
+		if(ciperCrypt.getKeyIv()!=null&&ciperCrypt.getKeyIv().length>0){
+			ivBytes=ciperCrypt.getKeyIv();
+		}
+
+		Key clef = keyStore.getKey(coffreFort.getConfig().getKeyCrypt().getSecretKeyEntry(), pwd);
 		//byte ivBytes[]=key_store.getKey(IV_CRYPTAGE, pwd);
 		key = new SecretKeySpec(clef.getEncoded(), clef.getAlgorithm());
 		IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
@@ -172,6 +189,9 @@ public class Cryptage2 implements ICryptage {
 			cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
 		} else {
 			cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+		}
+		if(ciperCrypt!=null) {
+			ciperCrypt.setKeyIv(ivBytes);
 		}
 		return cipher;
 	}
@@ -209,7 +229,6 @@ public class Cryptage2 implements ICryptage {
 		byte[] val = new byte[32];
 		random.nextBytes(val);
 		SecretKey key = new SecretKeySpec(val, configCrypt.getKeyCrypt().getSecretKeyCryptage());
-		//char[] password = "changeit".toCharArray();
 		byte[] salt = new byte[20];
 		random.nextBytes(salt);
 		keyStore.setEntry(configCrypt.getKeyCrypt().getSecretKeyEntry(), new KeyStore.SecretKeyEntry(key),
