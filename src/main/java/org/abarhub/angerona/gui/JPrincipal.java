@@ -206,7 +206,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 			if (!s.equals(s2)) {
 				erreur("Erreur pour relire le fichier !");
 			} else {
-				enregistre2(s, password);
+				//enregistre2(s, password);
 			}
 		} catch (Exception ex) {
 			LOGGER.error(ex.getLocalizedMessage(), ex);
@@ -214,66 +214,66 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 		}
 	}//GEN-LAST:event_jButton2ActionPerformed
 
-	private void enregistre2(String s, char[] password) throws IOException, GeneralSecurityException, InvalidCipherTextException, CoffreFortException {
-		Traitement2 traitement2 = new Traitement2();
-		traitement2.enregistre(s, password);
-	}
-
-	private void enregistre20(String s, char[] password) {
-		try {
-			Path fichier = Paths.get("C:\\projet\\angerona\\data/keystore.p12");
-
-			LOGGER.info("Enregistrement de {} ...", fichier);
-			KeyStore keyStore = KeyStore.getInstance("PKCS12");
-			keyStore.load(null, null); // Initialize a blank keystore
-			Random random = Tools.getSecureRandom();
-			byte[] val = new byte[32];
-			random.nextBytes(val);
-			SecretKey key = new SecretKeySpec(val, "AES");
-			//char[] password = "changeit".toCharArray();
-			byte[] salt = new byte[20];
-			random.nextBytes(salt);
-			keyStore.setEntry("clef_cryptage", new KeyStore.SecretKeyEntry(key),
-					new KeyStore.PasswordProtection(password,
-							"PBEWithHmacSHA512AndAES_128",
-							new PBEParameterSpec(salt, 100_000)));
-			//keyStore.store(Files.newOutputStream(fichier,StandardOpenOption.CREATE_NEW,
-			//		StandardOpenOption.TRUNCATE_EXISTING), password);
-			keyStore.store(new FileOutputStream(fichier.toFile()), password);
-
-			LOGGER.info("Enregistrement de {} OK", fichier);
-
-			LOGGER.info("Fichier {} existe : {}", fichier, Files.exists(fichier));
-
-			ConfigCrypt configCrypt;// = new ConfigCrypt();
-//			configCrypt.setDateCreation(new Date());
-//			configCrypt.setKeystoreAlgo("PKCS12");
-//			KeyCrypt keyCrypt = new KeyCrypt();
-//			keyCrypt.setSecretKeyCryptage("AES");
-//			keyCrypt.setSecretKeyEntry("clef_cryptage");
-//			keyCrypt.setProtectionAlgo("PBEWithHmacSHA512AndAES_128");
-//			keyCrypt.setProtectionIteration(100_000);
-//			keyCrypt.setKeyIv(salt);
-//			configCrypt.setKeyCrypt(keyCrypt);
-			configCrypt = ConfigFactory.createNewConfigCrypt();
-			configCrypt.getKeyCrypt().setKeyIv(salt);
-
-			//GsonBuilder gsonBuilder = new GsonBuilder();
-			//gsonBuilder.registerTypeAdapter(Date.class, new LocalDateTimeSerializer());
-			//gsonBuilder.registerTypeAdapter(byte[].class, new ByteArraySerializer());
-
-			Gson gson;
-			//gson = gsonBuilder.create();
-			gson = Tools.createGson();
-			//gson = new Gson();
-			String json = gson.toJson(configCrypt);
-
-			Files.write(fichier.getParent().resolve("param.json"), json.getBytes(StandardCharsets.UTF_8));
-
-		} catch (Exception e) {
-			LOGGER.error(e.getLocalizedMessage(), e);
-		}
-	}
+//	private void enregistre2(String s, char[] password) throws IOException, GeneralSecurityException, InvalidCipherTextException, CoffreFortException {
+//		Traitement2 traitement2 = new Traitement2();
+//		traitement2.enregistre(s, password);
+//	}
+//
+//	private void enregistre20(String s, char[] password) {
+//		try {
+//			Path fichier = Paths.get("C:\\projet\\angerona\\data/keystore.p12");
+//
+//			LOGGER.info("Enregistrement de {} ...", fichier);
+//			KeyStore keyStore = KeyStore.getInstance("PKCS12");
+//			keyStore.load(null, null); // Initialize a blank keystore
+//			Random random = Tools.getSecureRandom();
+//			byte[] val = new byte[32];
+//			random.nextBytes(val);
+//			SecretKey key = new SecretKeySpec(val, "AES");
+//			//char[] password = "changeit".toCharArray();
+//			byte[] salt = new byte[20];
+//			random.nextBytes(salt);
+//			keyStore.setEntry("clef_cryptage", new KeyStore.SecretKeyEntry(key),
+//					new KeyStore.PasswordProtection(password,
+//							"PBEWithHmacSHA512AndAES_128",
+//							new PBEParameterSpec(salt, 100_000)));
+//			//keyStore.store(Files.newOutputStream(fichier,StandardOpenOption.CREATE_NEW,
+//			//		StandardOpenOption.TRUNCATE_EXISTING), password);
+//			keyStore.store(new FileOutputStream(fichier.toFile()), password);
+//
+//			LOGGER.info("Enregistrement de {} OK", fichier);
+//
+//			LOGGER.info("Fichier {} existe : {}", fichier, Files.exists(fichier));
+//
+//			ConfigCrypt configCrypt;// = new ConfigCrypt();
+////			configCrypt.setDateCreation(new Date());
+////			configCrypt.setKeystoreAlgo("PKCS12");
+////			KeyCrypt keyCrypt = new KeyCrypt();
+////			keyCrypt.setSecretKeyCryptage("AES");
+////			keyCrypt.setSecretKeyEntry("clef_cryptage");
+////			keyCrypt.setProtectionAlgo("PBEWithHmacSHA512AndAES_128");
+////			keyCrypt.setProtectionIteration(100_000);
+////			keyCrypt.setKeyIv(salt);
+////			configCrypt.setKeyCrypt(keyCrypt);
+//			configCrypt = ConfigFactory.createNewConfigCrypt();
+//			configCrypt.getKeyCrypt().setKeyIv(salt);
+//
+//			//GsonBuilder gsonBuilder = new GsonBuilder();
+//			//gsonBuilder.registerTypeAdapter(Date.class, new LocalDateTimeSerializer());
+//			//gsonBuilder.registerTypeAdapter(byte[].class, new ByteArraySerializer());
+//
+//			Gson gson;
+//			//gson = gsonBuilder.create();
+//			gson = Tools.createGson();
+//			//gson = new Gson();
+//			String json = gson.toJson(configCrypt);
+//
+//			Files.write(fichier.getParent().resolve("param.json"), json.getBytes(StandardCharsets.UTF_8));
+//
+//		} catch (Exception e) {
+//			LOGGER.error(e.getLocalizedMessage(), e);
+//		}
+//	}
 
 	private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
 		Traitement tr;
