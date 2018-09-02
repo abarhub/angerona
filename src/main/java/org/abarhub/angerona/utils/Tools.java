@@ -11,6 +11,7 @@ import org.abarhub.angerona.json.ByteArraySerializer;
 import org.abarhub.angerona.json.LocalDateTimeDeserializer;
 import org.abarhub.angerona.json.LocalDateTimeSerializer;
 import org.abarhub.angerona.security.Traitement;
+import org.abarhub.angerona.security.Traitement2;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
@@ -146,6 +147,10 @@ public class Tools {
 	}
 
 	public static Traitement createTraitement() throws IOException {
-		return new Traitement();
+		if (false) {
+			return new Traitement();
+		} else {
+			return new Traitement2();
+		}
 	}
 }

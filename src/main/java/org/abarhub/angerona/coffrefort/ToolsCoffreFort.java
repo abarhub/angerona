@@ -20,6 +20,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class ToolsCoffreFort {
 	public void save(CoffreFort coffreFort, Path fichier) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
 		coffreFort = Preconditions.checkNotNull(coffreFort);
 		fichier = Preconditions.checkNotNull(fichier);
+		Preconditions.checkNotNull(coffreFort.getKeystorePassword());
 
 		LOGGER.info("sauvegarde du keystore ...");
 
@@ -228,7 +230,7 @@ public class ToolsCoffreFort {
 			if (!Files.exists(rep_backup)) {
 				Files.createDirectories(rep_backup);
 			}
-			final String debutFichier = "backupbis";
+			final String debutFichier = "backup_v2_";
 			nom_backup = debutFichier + ".zip";
 			fichier_backup = rep_backup.resolve(nom_backup);
 			if (Files.exists(fichier_backup)) {
@@ -245,17 +247,14 @@ public class ToolsCoffreFort {
 				liste_fichier = paths.filter(Files::isRegularFile).collect(Collectors.toList());
 			}
 
-//			liste_fichier = new ArrayList<>();
-//
-//			liste_fichier.add(donne_fichier_data());
-//			liste_fichier.add(donne_fichier_data_hash());
-//			liste_fichier.add(KeyStoreFile());
-//			liste_fichier.add(KeyStoreFileHash());
+			List<Path> fichierASupprimer = new ArrayList<>();
+
 			buffer = new byte[512];
 			try (OutputStream fos = Files.newOutputStream(fichier_backup)) {
 				try (ZipOutputStream zos = new ZipOutputStream(fos)) {
 					for (Path f2 : liste_fichier) {
-						ZipEntry ze = new ZipEntry(f2.getFileName().toString());
+						String filename = f2.getFileName().toString();
+						ZipEntry ze = new ZipEntry(filename);
 						zos.putNextEntry(ze);
 						try (InputStream in = Files.newInputStream(f2)) {
 							int len;
@@ -264,7 +263,28 @@ public class ToolsCoffreFort {
 							}
 						}
 						zos.closeEntry();
+
+						if (filename.endsWith("coffrefort.zip")) {
+							// on ne supprime pas ce fichier
+						} else if (filename.endsWith(".p12")
+								|| filename.endsWith(".json")
+								|| filename.endsWith(".zip")
+								|| filename.endsWith(".asc")
+								|| filename.endsWith(".bin")
+								|| filename.endsWith(".crpt")
+								|| filename.endsWith(".bin")
+								|| filename.endsWith(".bin")) {
+							fichierASupprimer.add(f2);
+						}
 					}
+				}
+			}
+
+			if (!fichierASupprimer.isEmpty()) {
+				LOGGER.info("suppression des fichiers");
+
+				for (Path p : fichierASupprimer) {
+					Files.delete(p);
 				}
 			}
 
@@ -282,7 +302,7 @@ public class ToolsCoffreFort {
 
 			String contenu = null;
 
-			LOGGER.error("convertion ...");
+			LOGGER.info("convertion ...");
 
 			try {
 				Traitement tr = new Traitement();
@@ -309,15 +329,20 @@ public class ToolsCoffreFort {
 				LOGGER.error("Erreur pour enregistrer le coffre fort", e);
 				throw new CoffreFortException("Erreur pour enregistrer le coffre fort");
 			}
-//			CoffreFort coffreFort=new CoffreFort();
-//			Message message=new Message();
-//			message.setMessage(contenu);
-//			coffreFort.setMessage(message);
-//			coffreFort.setKeystorePassword(password);
-//
-//			save();
 
-			LOGGER.error("convertion OK");
+			LOGGER.info("convertion OK");
+
+		} else {
+			Path fichierAncienFormat=Paths.get("data/keystore.bin");
+			if(Files.exists(fichierAncienFormat)){
+
+				LOGGER.info("backup des fichiers de l'ancien format ...");
+
+				ToolsCoffreFort toolsCoffreFort=new ToolsCoffreFort();
+				toolsCoffreFort.backup();
+
+				LOGGER.info("backup des fichiers de l'ancien format ok");
+			}
 		}
 	}
 }

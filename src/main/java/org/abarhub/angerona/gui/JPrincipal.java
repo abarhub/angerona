@@ -380,14 +380,16 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 		Traitement tr;
 		String s;
 		try {
+
+			ToolsCoffreFort toolsCoffreFort=new ToolsCoffreFort();
+			toolsCoffreFort.convertion(password);
+
 			tr = Tools.createTraitement();
 			tr.load_keystore(password);
 			s = tr.lecture(password);
 			if (s != null) {
 				jTextArea1.setText(s);
 			}
-			ToolsCoffreFort toolsCoffreFort=new ToolsCoffreFort();
-			toolsCoffreFort.convertion(password);
 		} catch (Exception ex) {
 			LOGGER.error(ex.getLocalizedMessage(), ex);
 			erreur("Erreur:" + ex.getLocalizedMessage());

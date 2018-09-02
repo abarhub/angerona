@@ -144,6 +144,8 @@ public class Cryptage2 implements ICryptage {
 
 		coffreFort.getMessage().setMessageCrypte(messageCrypte);
 
+		coffreFort.setKeystorePassword(pwd);
+
 		//f2 = donne_fichier_data_hash();//new File(f.getParent(),"hash.asc");
 		//enregistre_hash(texte, f2);
 		Path path = getPathCoffreFort();
@@ -162,8 +164,8 @@ public class Cryptage2 implements ICryptage {
 		if (keyStore == null) {
 			throw new IllegalArgumentException();
 		}
-		//Cipher cipher = Cipher.getInstance("AES/CTR/PKCS7Padding", "BC");//new DESEngine();
-		Cipher cipher = Cipher.getInstance("AES/CTR/PKCS7Padding");//new DESEngine();
+		Cipher cipher = Cipher.getInstance("AES/CTR/PKCS7Padding", "BC");//new DESEngine();
+		//Cipher cipher = Cipher.getInstance("AES/CTR/PKCS7Padding");//new DESEngine();
 		//BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(engine));
 		//String keyString="ABCDEF";
 		//byte[] key = keyString.getBytes();
