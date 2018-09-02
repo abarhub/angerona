@@ -112,6 +112,8 @@ public class Cryptage2 implements ICryptage {
 		Cipher cipher;
 		//BufferedOutputStream out = null;
 		//backup();
+		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
+		toolsCoffreFort.backup();
 		LOGGER.info("ecriture data");
 		//f = donne_fichier_data();
 		cipher = getBlockCipher(true, pwd);
@@ -141,7 +143,6 @@ public class Cryptage2 implements ICryptage {
 		//enregistre_hash(texte, f2);
 		Path path = getPathCoffreFort();
 
-		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
 		toolsCoffreFort.save(coffreFort, path);
 
 	}

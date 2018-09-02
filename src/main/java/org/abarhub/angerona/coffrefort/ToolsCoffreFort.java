@@ -12,12 +12,16 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -207,6 +211,66 @@ public class ToolsCoffreFort {
 		}
 
 		return outputStream.toByteArray();
+	}
+
+	public void backup() {
+		Path fichier_backup, rep_backup;
+		String nom_backup;
+		int n;
+		List<Path> liste_fichier;
+		byte buffer[];
+		LOGGER.info("Backup...");
+		try {
+			rep_backup = Paths.get("backup");
+			if (!Files.exists(rep_backup)) {
+				Files.createDirectories(rep_backup);
+			}
+			final String debutFichier = "backupbis";
+			nom_backup = debutFichier + ".zip";
+			fichier_backup = rep_backup.resolve(nom_backup);
+			if (Files.exists(fichier_backup)) {
+				n = 2;
+				do {
+					nom_backup = debutFichier + n + ".zip";
+					fichier_backup = rep_backup.resolve(nom_backup);
+					n++;
+				} while (Files.exists(fichier_backup));
+			}
+			LOGGER.info("Backup vers le fichier : {}", fichier_backup);
+
+			try (Stream<Path> paths = Files.walk(Paths.get("data"))) {
+				liste_fichier = paths.filter(Files::isRegularFile).collect(Collectors.toList());
+			}
+
+//			liste_fichier = new ArrayList<>();
+//
+//			liste_fichier.add(donne_fichier_data());
+//			liste_fichier.add(donne_fichier_data_hash());
+//			liste_fichier.add(KeyStoreFile());
+//			liste_fichier.add(KeyStoreFileHash());
+			buffer = new byte[512];
+			try (OutputStream fos = Files.newOutputStream(fichier_backup)) {
+				try (ZipOutputStream zos = new ZipOutputStream(fos)) {
+					for (Path f2 : liste_fichier) {
+						ZipEntry ze = new ZipEntry(f2.getFileName().toString());
+						zos.putNextEntry(ze);
+						try (InputStream in = Files.newInputStream(f2)) {
+							int len;
+							while ((len = in.read(buffer)) > 0) {
+								zos.write(buffer, 0, len);
+							}
+						}
+						zos.closeEntry();
+					}
+				}
+			}
+
+			LOGGER.info("Backup termine");
+
+		} catch (IOException ex) {
+			LOGGER.error(ex.getLocalizedMessage(), ex);
+		}
+		LOGGER.info("Fin de backup");
 	}
 
 }
