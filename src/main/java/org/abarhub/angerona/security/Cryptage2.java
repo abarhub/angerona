@@ -128,16 +128,8 @@ public class Cryptage2 implements ICryptage {
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try (CipherOutputStream out2 = new CipherOutputStream(outputStream, cipher)) {
-			//out = new BufferedOutputStream(outputStream);
-			//out2 = new CipherOutputStream(outputStream, cipher);
 			out2.write(texte);
-		} /*finally {
-			if (out2 != null) {
-				out2.close();
-			} else if (out != null) {
-				out.close();
-			}
-		}*/
+		}
 
 		byte[] messageCrypte = outputStream.toByteArray();
 
@@ -210,20 +202,20 @@ public class Cryptage2 implements ICryptage {
 
 		ConfigCrypt configCrypt = coffreFort.getConfig();
 
-		KeyStore keyStore = KeyStore.getInstance("PKCS12");
+		KeyStore keyStore = KeyStore.getInstance(configCrypt.getKeystoreAlgo());
 		//KeyStore keyStore = KeyStore.getInstance("PKCS12","BC");
 		keyStore.load(null, null); // Initialize a blank keystore
 		Random random = Tools.getSecureRandom();
 		byte[] val = new byte[32];
 		random.nextBytes(val);
-		SecretKey key = new SecretKeySpec(val, "AES");
+		SecretKey key = new SecretKeySpec(val, configCrypt.getKeyCrypt().getSecretKeyCryptage());
 		//char[] password = "changeit".toCharArray();
 		byte[] salt = new byte[20];
 		random.nextBytes(salt);
-		keyStore.setEntry(CLEF_CRYPTAGE, new KeyStore.SecretKeyEntry(key),
+		keyStore.setEntry(configCrypt.getKeyCrypt().getSecretKeyEntry(), new KeyStore.SecretKeyEntry(key),
 				new KeyStore.PasswordProtection(password,
-						"PBEWithHmacSHA512AndAES_128",
-						new PBEParameterSpec(salt, 100_000)));
+						configCrypt.getKeyCrypt().getProtectionAlgo(),
+						new PBEParameterSpec(salt, configCrypt.getKeyCrypt().getProtectionIteration())));
 
 		configCrypt.getKeyCrypt().setKeyIv(salt);
 

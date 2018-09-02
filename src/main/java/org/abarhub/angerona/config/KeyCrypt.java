@@ -5,7 +5,7 @@ public class KeyCrypt {
 	private String secretKeyCryptage;
 	private String secretKeyEntry;
 	private String protectionAlgo;
-	private long protectionIteration;
+	private int protectionIteration;
 	private String keystoreFilename;
 	private byte[] keyIv;
 
@@ -33,11 +33,11 @@ public class KeyCrypt {
 		this.protectionAlgo = protectionAlgo;
 	}
 
-	public long getProtectionIteration() {
+	public int getProtectionIteration() {
 		return protectionIteration;
 	}
 
-	public void setProtectionIteration(long protectionIteration) {
+	public void setProtectionIteration(int protectionIteration) {
 		this.protectionIteration = protectionIteration;
 	}
 

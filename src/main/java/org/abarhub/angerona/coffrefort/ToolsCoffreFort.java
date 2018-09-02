@@ -210,7 +210,7 @@ public class ToolsCoffreFort {
 
 		if (contenuZip.containsKey(KEYSTORE_P12_FILENAME)) {
 			byte[] buf = contenuZip.get(KEYSTORE_P12_FILENAME);
-			KeyStore keyStore = KeyStore.getInstance("PKCS12");
+			KeyStore keyStore = KeyStore.getInstance(coffreFort.getConfig().getKeystoreAlgo());
 			keyStore.load(new ByteArrayInputStream(buf), key);
 			coffreFort.setKeystore(keyStore);
 		} else {
@@ -454,7 +454,6 @@ public class ToolsCoffreFort {
 	}
 
 	private boolean existeAnciensFichiers() {
-		//p12
 		Path fichierAncienFormat = Paths.get("data/keystore.bin");
 		if (Files.exists(fichierAncienFormat)) {
 			return true;
