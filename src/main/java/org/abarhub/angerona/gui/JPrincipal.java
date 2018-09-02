@@ -209,7 +209,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 			} else {
 				enregistre2(s, password);
 			}
-		} catch (KeyStoreHashException | DecoderException | DataLengthException | InvalidCipherTextException | GeneralSecurityException | IOException ex) {
+		} catch (Exception ex) {
 			LOGGER.error(ex.getLocalizedMessage(), ex);
 			erreur("Erreur:" + ex.getLocalizedMessage());
 		}
@@ -314,7 +314,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 				} else {
 					erreur("Impossible de lire le fichier !");
 				}
-			} catch (KeyStoreHashException | DecoderException | DataLengthException | InvalidCipherTextException | GeneralSecurityException | IOException ex) {
+			} catch (Exception ex) {
 				LOGGER.error(ex.getLocalizedMessage(), ex);
 				erreur("Erreur:" + ex.getLocalizedMessage());
 			}
@@ -385,7 +385,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 			if (s != null) {
 				jTextArea1.setText(s);
 			}
-		} catch (KeyStoreHashException | DecoderException | DataLengthException | InvalidCipherTextException | GeneralSecurityException | IOException ex) {
+		} catch (Exception ex) {
 			LOGGER.error(ex.getLocalizedMessage(), ex);
 			erreur("Erreur:" + ex.getLocalizedMessage());
 			return false;

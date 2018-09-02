@@ -4,6 +4,7 @@
  */
 package org.abarhub.angerona.security;
 
+import org.abarhub.angerona.exception.CoffreFortException;
 import org.abarhub.angerona.exception.KeyStoreHashException;
 import org.abarhub.angerona.utils.Config;
 import org.abarhub.angerona.utils.Resultat;
@@ -23,7 +24,7 @@ public class Traitement implements ITraitement {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(Traitement.class);
 
-	private Cryptage crypt;
+	private ICryptage crypt;
 	private Config config;
 
 	public Traitement() throws IOException {
@@ -31,7 +32,7 @@ public class Traitement implements ITraitement {
 		crypt = getCrypt();
 	}
 
-	protected Cryptage getCrypt() {
+	protected ICryptage getCrypt() throws IOException {
 		return new Cryptage(config);
 	}
 
@@ -42,10 +43,11 @@ public class Traitement implements ITraitement {
 		//System.out.println("Ecriture de :"+s);
 		crypt.ecriture(pwd);
 		//System.out.println("Ecriture terminé");
+		log("enregistrement ok");
 	}
 
 	@Override
-	public void enregistre_changement_clef(String s, char new_password[]) throws GeneralSecurityException, IOException, DataLengthException, InvalidCipherTextException, DecoderException, KeyStoreHashException {
+	public void enregistre_changement_clef(String s, char new_password[]) throws GeneralSecurityException, IOException, DataLengthException, InvalidCipherTextException, DecoderException, KeyStoreHashException, CoffreFortException {
 
 		log("debut change clef ...");
 		crypt.setContenu(s);
@@ -59,12 +61,13 @@ public class Traitement implements ITraitement {
 	}
 
 	@Override
-	public String lecture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, DecoderException {
+	public String lecture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, DecoderException, CoffreFortException {
 		String s;
 
 		log("lecture");
 		crypt.lecture(pwd);
 		s = crypt.getContenu();
+		log("lecture ok");
 		return s;
 	}
 
@@ -74,7 +77,7 @@ public class Traitement implements ITraitement {
 	}
 
 	@Override
-	public void load_keystore(char[] key) throws GeneralSecurityException, IOException, DecoderException, KeyStoreHashException {
+	public void load_keystore(char[] key) throws GeneralSecurityException, IOException, DecoderException, KeyStoreHashException, CoffreFortException {
 		crypt.loadKeyStore(key);
 	}
 

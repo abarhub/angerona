@@ -37,7 +37,7 @@ import java.util.zip.ZipOutputStream;
 /**
  * @author abarret
  */
-public class Cryptage {
+public class Cryptage extends AbstractCryptage implements ICryptage {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(Cryptage.class);
 
@@ -63,6 +63,7 @@ public class Cryptage {
 		}
 	}
 
+	@Override
 	public void lecture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, DecoderException {
 		File f;
 		Cipher cipher;
@@ -102,6 +103,7 @@ public class Cryptage {
 		}
 	}
 
+	@Override
 	public void ecriture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException {
 		File f, f2;
 		Cipher cipher;
@@ -132,10 +134,12 @@ public class Cryptage {
 		//enregistre_hash(texte,f2,"SHA-512");
 	}
 
+	@Override
 	public String getContenu() {
 		return contenu;
 	}
 
+	@Override
 	public void setContenu(String contenu) {
 		this.contenu = contenu;
 	}
@@ -184,6 +188,7 @@ public class Cryptage {
 		return cipher;
 	}
 
+	@Override
 	public void init_keystore(char[] key) throws GeneralSecurityException, IOException {
 		KeyStore store;
 		Key key2;
@@ -216,12 +221,14 @@ public class Cryptage {
 		enregistre_hash_keystore(f);
 	}
 
+	@Override
 	public void loadKeyStore(char[] key) throws GeneralSecurityException, IOException, DecoderException, KeyStoreHashException {
 		verifie_hash_keystore();
 		key_store = KeyStore.getInstance(KeyStoreFormat, "BC");
 		key_store.load(new FileInputStream(KeyStoreFile()), key);
 	}
 
+	@Override
 	public Resultat verifie_password(char[] password) {
 		Resultat res;
 		res = new Resultat();
@@ -241,18 +248,6 @@ public class Cryptage {
 	}
 
 	public void log(String msg) {
-        /*File f;
-        Date d;
-        f=new File(config.getRep_data(),"divers.log");
-        if(!f.exists())
-        {
-            f.createNewFile();
-        }
-        try(FileWriter out=new FileWriter(f,true);PrintWriter out2=new PrintWriter(out))
-        {
-            d=new Date();
-            out2.printf("%tY-%tm-%td %tl-%tM %tp %s\n",d,d,d,d,d,d ,msg);
-        }*/
 		LOGGER.info(msg);
 	}
 
@@ -323,9 +318,6 @@ public class Cryptage {
 		Path p;
 		File f;
 		List<String> lignes;
-		String s2;
-		byte[] buf, buf2;
-		TypeHash type_hash;
 		if (data) {
 			f = donne_fichier_data_hash();
 		} else {
@@ -335,40 +327,7 @@ public class Cryptage {
 			log("Vérification du fichier hash : " + f.getAbsolutePath());
 			p = f.toPath();
 			lignes = Files.readAllLines(p, Charset.forName(FormatString));
-			if (lignes != null && !lignes.isEmpty()) {
-				for (String s : lignes) {
-					if (s != null && !s.isEmpty()) {
-						s = s.trim();
-						if (s != null && s.length() > 0 && s.contains("=")) {
-							type_hash = null;
-							for (TypeHash t : TypeHash.values()) {
-								if (s.startsWith(t.getNom() + "=")) {
-									type_hash = t;
-									break;
-								}
-							}
-							if (type_hash != null) {
-								s2 = s.substring((type_hash.getNom() + "=").length());
-								if (s2.isEmpty()) {
-									log("Vérification hash erreur : hash vide");
-									return false;
-								}
-								buf = Tools.convHexByte(s2);
-								buf2 = Tools.calcul_hash(toByteArray, type_hash.getAlgo());
-								if (buf == null || buf.length == 0) {
-									log("Vérification hash erreur : hash vide");
-									return false;
-								} else if (!Tools.egaux(buf, buf2)) {
-									log("Vérification hash erreur : hash différent");
-									return false;
-								} else {
-									log("Vérification hash " + type_hash + " : ok");
-								}
-							}
-						}
-					}
-				}
-			}
+			if (verifyHash(toByteArray, lignes)) return false;
 			log("Vérification hash Ok");
 			return true;
 		} else {

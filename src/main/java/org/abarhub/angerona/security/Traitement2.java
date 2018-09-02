@@ -6,11 +6,8 @@ import org.abarhub.angerona.coffrefort.Message;
 import org.abarhub.angerona.coffrefort.ToolsCoffreFort;
 import org.abarhub.angerona.config.ConfigCrypt;
 import org.abarhub.angerona.config.ConfigFactory;
-import org.abarhub.angerona.exception.KeyStoreHashException;
 import org.abarhub.angerona.utils.Config;
-import org.abarhub.angerona.utils.Resultat;
 import org.abarhub.angerona.utils.Tools;
-import org.apache.commons.codec.DecoderException;
 import org.bouncycastle.crypto.DataLengthException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.slf4j.Logger;
@@ -37,6 +34,11 @@ public class Traitement2 extends Traitement implements ITraitement {
 
 	public Traitement2() throws IOException {
 		this.config = new Config();
+	}
+
+	@Override
+	protected ICryptage getCrypt() throws IOException {
+		return new Cryptage2((config != null) ? config : new Config());
 	}
 
 	@Override
@@ -95,6 +97,12 @@ public class Traitement2 extends Traitement implements ITraitement {
 
 			ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
 			toolsCoffreFort.save(coffreFort, fichierZip);
+
+			LOGGER.info("chargement {} ...", fichierZip);
+
+			CoffreFort coffreFort2 = toolsCoffreFort.load(fichierZip, password);
+
+			LOGGER.info("chargement {} OK", fichierZip);
 
 		} catch (Exception e) {
 			LOGGER.error(e.getLocalizedMessage(), e);

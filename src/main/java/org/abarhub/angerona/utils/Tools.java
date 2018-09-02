@@ -6,7 +6,9 @@ package org.abarhub.angerona.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.abarhub.angerona.json.ByteArrayDeserializer;
 import org.abarhub.angerona.json.ByteArraySerializer;
+import org.abarhub.angerona.json.LocalDateTimeDeserializer;
 import org.abarhub.angerona.json.LocalDateTimeSerializer;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -131,10 +133,13 @@ public class Tools {
 				StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
 	}
 
-	public static Gson createGson(){
+	public static Gson createGson() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
+		gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer());
 		gsonBuilder.registerTypeAdapter(byte[].class, new ByteArraySerializer());
+		gsonBuilder.registerTypeAdapter(byte[].class, new ByteArrayDeserializer());
+
 
 		return gsonBuilder.create();
 	}
