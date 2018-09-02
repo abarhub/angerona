@@ -4,6 +4,7 @@
  */
 package org.abarhub.angerona.utils;
 
+import com.google.common.io.BaseEncoding;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.abarhub.angerona.json.ByteArrayDeserializer;
@@ -13,10 +14,8 @@ import org.abarhub.angerona.json.LocalDateTimeSerializer;
 import org.abarhub.angerona.security.Traitement;
 import org.abarhub.angerona.security.Traitement2;
 import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -82,15 +81,17 @@ public class Tools {
 
 	public static String convHexString(byte[] tab) {
 		String result;
-		result = Hex.encodeHexString(tab);
+		//result = Hex.encodeHexString(tab);
+		result = BaseEncoding.base16().lowerCase().encode(tab);
 		return result;
 	}
 
-	public static byte[] convHexByte(String s) throws DecoderException, UnsupportedEncodingException {
+	public static byte[] convHexByte(String s) throws DecoderException {
 		byte[] result;
-		Hex hex;
-		hex = new Hex();
-		result = hex.decode(s.getBytes("UTF-8"));
+		//Hex hex;
+		//hex = new Hex();
+		//result = hex.decode(s.getBytes(StandardCharsets.UTF_8));
+		result = BaseEncoding.base16().lowerCase().decode(s);
 		return result;
 	}
 

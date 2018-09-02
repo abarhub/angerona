@@ -39,7 +39,7 @@ public class ToolsCoffreFort {
 	private static final String PARAM_JSON_FILENAME = "param.json";
 	private static final String KEYSTORE_P12_FILENAME = "keystore.p12";
 
-	public void save(CoffreFort coffreFort, Path fichier) throws IOException, GeneralSecurityException {
+	public void save(CoffreFort coffreFort, Path fichier) throws IOException, GeneralSecurityException, CoffreFortException {
 		coffreFort = Preconditions.checkNotNull(coffreFort);
 		fichier = Preconditions.checkNotNull(fichier);
 		Preconditions.checkNotNull(coffreFort.getKeystorePassword());
@@ -96,6 +96,8 @@ public class ToolsCoffreFort {
 				out.finish();
 				out.flush();
 			}
+
+			dest.flush();
 		}
 
 		LOGGER.info("enregistrement du hash ...");
@@ -105,6 +107,13 @@ public class ToolsCoffreFort {
 		Path p = getPathHash(fichier);
 
 		enregistreHash(buf, p);
+
+		try {
+			verifieHash(fichier);
+		} catch (CoffreFortException e) {
+			LOGGER.error("Erreur pour la verification du hash", e);
+			throw new CoffreFortException("Erreur pour la verification du hash", e);
+		}
 
 		LOGGER.info("enregistrement du hash OK");
 

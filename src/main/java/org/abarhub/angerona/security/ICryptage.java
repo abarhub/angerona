@@ -13,7 +13,7 @@ import java.security.GeneralSecurityException;
 public interface ICryptage {
 	void lecture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, DecoderException, CoffreFortException;
 
-	void ecriture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException;
+	void ecriture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, CoffreFortException;
 
 	String getContenu();
 

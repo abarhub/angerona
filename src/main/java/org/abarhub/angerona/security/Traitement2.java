@@ -41,10 +41,10 @@ public class Traitement2 extends Traitement implements ITraitement {
 		return new Cryptage2((config != null) ? config : new Config());
 	}
 
-	@Override
-	public void enregistre(String s, char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException {
-		enregistre2(s, pwd);
-	}
+//	@Override
+//	public void enregistre(String s, char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException {
+//		enregistre2(s, pwd);
+//	}
 
 	private void enregistre2(String s, char[] password) {
 		try {

@@ -108,7 +108,7 @@ public class Cryptage2 implements ICryptage {
 	}
 
 	@Override
-	public void ecriture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException {
+	public void ecriture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, CoffreFortException {
 		Preconditions.checkNotNull(pwd, "Le mot de passe ne peut pas être null");
 		Preconditions.checkArgument(pwd.length > 0, "Le mot de passe ne peut pas être null");
 		Preconditions.checkNotNull(coffreFort);

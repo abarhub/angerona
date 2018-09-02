@@ -37,7 +37,7 @@ public class Traitement implements ITraitement {
 	}
 
 	@Override
-	public void enregistre(String s, char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException {
+	public void enregistre(String s, char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, CoffreFortException {
 		log("enregistrement");
 		init(pwd);
 		crypt.setContenu(s);
