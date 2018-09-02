@@ -9,7 +9,6 @@ import org.abarhub.angerona.security.Traitement;
 import org.abarhub.angerona.security.TypeHash;
 import org.abarhub.angerona.utils.Config;
 import org.abarhub.angerona.utils.Tools;
-import org.apache.commons.codec.DecoderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -253,7 +252,7 @@ public class ToolsCoffreFort {
 	}
 
 
-	private boolean verifie(Path fichierHash, byte[] toByteArray) throws IOException, DecoderException, GeneralSecurityException {
+	private boolean verifie(Path fichierHash, byte[] toByteArray) throws IOException, GeneralSecurityException {
 		List<String> lignes;
 		if (Files.exists(fichierHash)) {
 			LOGGER.info("Vérification du fichier hash : {}", fichierHash);
@@ -272,7 +271,7 @@ public class ToolsCoffreFort {
 	}
 
 
-	protected boolean verifyHash(byte[] toByteArray, List<String> lignes) throws DecoderException, IOException, GeneralSecurityException {
+	protected boolean verifyHash(byte[] toByteArray, List<String> lignes) throws IOException, GeneralSecurityException {
 		TypeHash type_hash;
 		String s2;
 		byte[] buf;

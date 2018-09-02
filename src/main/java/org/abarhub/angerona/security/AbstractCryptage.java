@@ -1,7 +1,6 @@
 package org.abarhub.angerona.security;
 
 import org.abarhub.angerona.utils.Tools;
-import org.apache.commons.codec.DecoderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +12,7 @@ public abstract class AbstractCryptage {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AbstractCryptage.class);
 
-	protected boolean verifyHash(byte[] toByteArray, List<String> lignes) throws DecoderException, IOException, GeneralSecurityException {
+	protected boolean verifyHash(byte[] toByteArray, List<String> lignes) throws IOException, GeneralSecurityException {
 		TypeHash type_hash;
 		String s2;
 		byte[] buf;

@@ -8,12 +8,10 @@ import com.google.gson.Gson;
 import org.abarhub.angerona.coffrefort.ToolsCoffreFort;
 import org.abarhub.angerona.config.ConfigCrypt;
 import org.abarhub.angerona.config.ConfigFactory;
-import org.abarhub.angerona.exception.KeyStoreHashException;
+import org.abarhub.angerona.exception.CoffreFortException;
 import org.abarhub.angerona.security.Traitement;
 import org.abarhub.angerona.security.Traitement2;
 import org.abarhub.angerona.utils.Tools;
-import org.apache.commons.codec.DecoderException;
-import org.bouncycastle.crypto.DataLengthException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,9 +214,9 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 		}
 	}//GEN-LAST:event_jButton2ActionPerformed
 
-	private void enregistre2(String s, char[] password) throws IOException, GeneralSecurityException, InvalidCipherTextException {
-		Traitement2 traitement2=new Traitement2();
-		traitement2.enregistre(s,password);
+	private void enregistre2(String s, char[] password) throws IOException, GeneralSecurityException, InvalidCipherTextException, CoffreFortException {
+		Traitement2 traitement2 = new Traitement2();
+		traitement2.enregistre(s, password);
 	}
 
 	private void enregistre20(String s, char[] password) {
@@ -381,7 +379,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 		String s;
 		try {
 
-			ToolsCoffreFort toolsCoffreFort=new ToolsCoffreFort();
+			ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
 			toolsCoffreFort.convertion(password);
 
 			tr = Tools.createTraitement();

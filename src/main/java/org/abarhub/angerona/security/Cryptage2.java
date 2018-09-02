@@ -11,7 +11,6 @@ import org.abarhub.angerona.exception.KeyStoreHashException;
 import org.abarhub.angerona.utils.Config;
 import org.abarhub.angerona.utils.Resultat;
 import org.abarhub.angerona.utils.Tools;
-import org.apache.commons.codec.DecoderException;
 import org.bouncycastle.crypto.DataLengthException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -34,8 +33,6 @@ import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.Security;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class Cryptage2 implements ICryptage {
@@ -62,7 +59,7 @@ public class Cryptage2 implements ICryptage {
 	}
 
 	@Override
-	public void lecture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, DecoderException, CoffreFortException {
+	public void lecture(char[] pwd) throws IOException, DataLengthException, GeneralSecurityException, CoffreFortException {
 		Cipher cipher;
 		BufferedInputStream in = null;
 		byte buf[];
@@ -234,7 +231,7 @@ public class Cryptage2 implements ICryptage {
 	}
 
 	@Override
-	public void loadKeyStore(char[] key) throws GeneralSecurityException, IOException, DecoderException, KeyStoreHashException, CoffreFortException {
+	public void loadKeyStore(char[] key) throws GeneralSecurityException, IOException, KeyStoreHashException, CoffreFortException {
 		Preconditions.checkNotNull(key, "Le mot de passe ne peut pas être null");
 		Preconditions.checkArgument(key.length > 0, "Le mot de passe ne peut pas être null");
 		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();

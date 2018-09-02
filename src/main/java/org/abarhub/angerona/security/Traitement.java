@@ -8,7 +8,6 @@ import org.abarhub.angerona.exception.CoffreFortException;
 import org.abarhub.angerona.exception.KeyStoreHashException;
 import org.abarhub.angerona.utils.Config;
 import org.abarhub.angerona.utils.Resultat;
-import org.apache.commons.codec.DecoderException;
 import org.bouncycastle.crypto.DataLengthException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.slf4j.Logger;
@@ -48,7 +47,7 @@ public class Traitement implements ITraitement {
 	}
 
 	@Override
-	public void enregistre_changement_clef(String s, char new_password[]) throws GeneralSecurityException, IOException, DataLengthException, InvalidCipherTextException, DecoderException, KeyStoreHashException, CoffreFortException {
+	public void enregistre_changement_clef(String s, char new_password[]) throws GeneralSecurityException, IOException, DataLengthException, InvalidCipherTextException, KeyStoreHashException, CoffreFortException {
 
 		log("debut change clef ...");
 		init(new_password);
@@ -63,7 +62,7 @@ public class Traitement implements ITraitement {
 	}
 
 	@Override
-	public String lecture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, DecoderException, CoffreFortException {
+	public String lecture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, CoffreFortException {
 		String s;
 
 		log("lecture");
@@ -81,7 +80,7 @@ public class Traitement implements ITraitement {
 	}
 
 	@Override
-	public void load_keystore(char[] key) throws GeneralSecurityException, IOException, DecoderException, KeyStoreHashException, CoffreFortException {
+	public void load_keystore(char[] key) throws GeneralSecurityException, IOException, KeyStoreHashException, CoffreFortException {
 		init(key);
 		crypt.loadKeyStore(key);
 	}
@@ -96,7 +95,7 @@ public class Traitement implements ITraitement {
 		LOGGER.info(msg);
 	}
 
-	protected void init(char[] password)  {
+	protected void init(char[] password) {
 
 	}
 }

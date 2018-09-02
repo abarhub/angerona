@@ -13,7 +13,6 @@ import org.abarhub.angerona.json.LocalDateTimeDeserializer;
 import org.abarhub.angerona.json.LocalDateTimeSerializer;
 import org.abarhub.angerona.security.Traitement;
 import org.abarhub.angerona.security.Traitement2;
-import org.apache.commons.codec.DecoderException;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -81,16 +80,12 @@ public class Tools {
 
 	public static String convHexString(byte[] tab) {
 		String result;
-		//result = Hex.encodeHexString(tab);
 		result = BaseEncoding.base16().lowerCase().encode(tab);
 		return result;
 	}
 
-	public static byte[] convHexByte(String s) throws DecoderException {
+	public static byte[] convHexByte(String s) {
 		byte[] result;
-		//Hex hex;
-		//hex = new Hex();
-		//result = hex.decode(s.getBytes(StandardCharsets.UTF_8));
 		result = BaseEncoding.base16().lowerCase().decode(s);
 		return result;
 	}

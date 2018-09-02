@@ -5,7 +5,6 @@
 package org.abarhub.angerona.test;
 
 import org.abarhub.angerona.utils.Tools;
-import org.apache.commons.codec.DecoderException;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -60,7 +59,7 @@ public class TestConvHex {
 	}
 
 	@Test
-	public void test2() throws DecoderException, UnsupportedEncodingException {
+	public void test2() throws UnsupportedEncodingException {
 		byte[] tab1, tab2;
 		String s;
 
@@ -74,7 +73,7 @@ public class TestConvHex {
 	}
 
 	@Test
-	public void test3() throws DecoderException, UnsupportedEncodingException {
+	public void test3() throws UnsupportedEncodingException {
 		byte[] tab1, tab2;
 		String s;
 
@@ -88,7 +87,7 @@ public class TestConvHex {
 	}
 
 	@Test
-	public void test4() throws DecoderException, UnsupportedEncodingException {
+	public void test4() throws UnsupportedEncodingException {
 		byte[] tab1, tab2;
 		String s;
 		int i;
@@ -114,7 +113,7 @@ public class TestConvHex {
 	}
 
 	@Test
-	public void test5() throws DecoderException, UnsupportedEncodingException {
+	public void test5() throws UnsupportedEncodingException {
 		byte[] tab1, tab2;
 		String s;
 		int nb = 20;

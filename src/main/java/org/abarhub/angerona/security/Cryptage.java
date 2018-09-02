@@ -8,7 +8,6 @@ import org.abarhub.angerona.exception.KeyStoreHashException;
 import org.abarhub.angerona.utils.Config;
 import org.abarhub.angerona.utils.Resultat;
 import org.abarhub.angerona.utils.Tools;
-import org.apache.commons.codec.DecoderException;
 import org.bouncycastle.crypto.DataLengthException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -64,7 +63,7 @@ public class Cryptage extends AbstractCryptage implements ICryptage {
 	}
 
 	@Override
-	public void lecture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException, DecoderException {
+	public void lecture(char[] pwd) throws IOException, DataLengthException, InvalidCipherTextException, GeneralSecurityException {
 		File f;
 		Cipher cipher;
 		BufferedInputStream in = null;
@@ -222,7 +221,7 @@ public class Cryptage extends AbstractCryptage implements ICryptage {
 	}
 
 	@Override
-	public void loadKeyStore(char[] key) throws GeneralSecurityException, IOException, DecoderException, KeyStoreHashException {
+	public void loadKeyStore(char[] key) throws GeneralSecurityException, IOException, KeyStoreHashException {
 		verifie_hash_keystore();
 		key_store = KeyStore.getInstance(KeyStoreFormat, "BC");
 		key_store.load(new FileInputStream(KeyStoreFile()), key);
@@ -314,7 +313,7 @@ public class Cryptage extends AbstractCryptage implements ICryptage {
 		log("Fin de backup");
 	}
 
-	private boolean verifie(byte[] toByteArray, boolean data) throws IOException, DecoderException, GeneralSecurityException {
+	private boolean verifie(byte[] toByteArray, boolean data) throws IOException, GeneralSecurityException {
 		Path p;
 		File f;
 		List<String> lignes;
@@ -348,7 +347,7 @@ public class Cryptage extends AbstractCryptage implements ICryptage {
 		enregistre_hash(buf, f2);
 	}
 
-	private void verifie_hash_keystore() throws IOException, DecoderException, GeneralSecurityException, KeyStoreHashException {
+	private void verifie_hash_keystore() throws IOException, GeneralSecurityException, KeyStoreHashException {
 		File f;
 		byte[] buf;
 		f = KeyStoreFile();
