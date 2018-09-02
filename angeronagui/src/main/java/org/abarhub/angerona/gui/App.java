@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 /**
- * Hello world!
+ * App
  */
 public class App {
 	final static Logger LOGGER = LoggerFactory.getLogger(App.class);
