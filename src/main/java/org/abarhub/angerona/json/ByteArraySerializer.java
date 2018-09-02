@@ -13,7 +13,6 @@ public class ByteArraySerializer implements JsonSerializer<byte[]> {
 		if (src == null) {
 			return JsonNull.INSTANCE;
 		}
-		//Base64 base64=Base64.getEncoder().encode(src);
 		return new JsonPrimitive(Base64.getEncoder().encodeToString(src));
 	}
 }

@@ -33,21 +33,17 @@ public class ToolsCoffreFort {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(ToolsCoffreFort.class);
 
-
 	private static final String MESSAGE_FILENAME = "message.crp";
 	private static final String PARAM_JSON_FILENAME = "param.json";
 	private static final String KEYSTORE_P12_FILENAME = "keystore.p12";
 
 	public void save(CoffreFort coffreFort, Path fichier) throws IOException, GeneralSecurityException, CoffreFortException {
-		coffreFort = Preconditions.checkNotNull(coffreFort);
-		fichier = Preconditions.checkNotNull(fichier);
+		Preconditions.checkNotNull(coffreFort);
+		Preconditions.checkNotNull(fichier);
 		Preconditions.checkNotNull(coffreFort.getKeystorePassword());
 
 		LOGGER.info("sauvegarde du coffre ...");
 
-		//Config config=new Config();
-
-		//File f=config.getRep_data();
 		try (OutputStream dest = Files.newOutputStream(fichier)) {
 			BufferedOutputStream buff = new BufferedOutputStream(dest);
 
@@ -67,10 +63,7 @@ public class ToolsCoffreFort {
 				buf = null;
 
 				if (coffreFort.getConfig() != null) {
-					Gson gson;
-					//gson = gsonBuilder.create();
-					gson = Tools.createGson();
-					//gson = new Gson();
+					Gson gson = Tools.createGson();
 					String json = gson.toJson(coffreFort.getConfig());
 					if (json != null && !json.isEmpty()) {
 						buf = json.getBytes(StandardCharsets.UTF_8);

@@ -8,7 +8,6 @@ import org.abarhub.angerona.config.CiperCrypt;
 import org.abarhub.angerona.config.ConfigCrypt;
 import org.abarhub.angerona.config.ConfigFactory;
 import org.abarhub.angerona.exception.CoffreFortException;
-import org.abarhub.angerona.exception.KeyStoreHashException;
 import org.abarhub.angerona.utils.Config;
 import org.abarhub.angerona.utils.Resultat;
 import org.abarhub.angerona.utils.Tools;
@@ -40,7 +39,7 @@ public class Cryptage2 implements ICryptage {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(Cryptage2.class);
 
-	private static final String CLEF_CRYPTAGE = "clef_cryptage";
+	//private static final String CLEF_CRYPTAGE = "clef_cryptage";
 
 	private Config config;
 	private CoffreFort coffreFort;
@@ -62,12 +61,10 @@ public class Cryptage2 implements ICryptage {
 	@Override
 	public void lecture(char[] pwd) throws IOException, DataLengthException, GeneralSecurityException, CoffreFortException {
 		Cipher cipher;
-		BufferedInputStream in = null;
 		byte buf[];
 		int len;
 		String buf3;
 		LOGGER.info("lecture data");
-		//f = donne_fichier_data();
 		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
 		Path fichierCoffreFort = this.getPathCoffreFort();
 		if (fichierCoffreFort == null || !Files.exists(fichierCoffreFort)) {
@@ -77,30 +74,16 @@ public class Cryptage2 implements ICryptage {
 
 		buf = new byte[512];
 		cipher = getBlockCipher(false, pwd);
-		//CipherInputStream in2;
 		ByteArrayOutputStream buf2;
 
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(coffreFort.getMessage().getMessageCrypte());
 		try (CipherInputStream in2 = new CipherInputStream(inputStream, cipher)) {
-			//in = new BufferedInputStream(new FileInputStream(f));
-			//in2 = new CipherInputStream(inputStream, cipher);
 			buf2 = new ByteArrayOutputStream();
 			while ((len = in2.read(buf)) != -1) {
 				buf2.write(buf, 0, len);
 			}
-			in2.close();
-		} finally {
-//			if (in != null)
-//				in.close();
-//			in = null;
 		}
 		buf3 = buf2.toString(StandardCharsets.UTF_8.displayName());
-//		if (verifie(buf2.toByteArray(), true)) {
-////			contenu = buf3;
-////		} else {
-////			LOGGER.error("Erreur dans le fichier avec les hash");
-////			throw new IllegalArgumentException();
-////		}
 		coffreFort.getMessage().setMessage(buf3);
 		this.coffreFort = coffreFort;
 	}
@@ -113,16 +96,11 @@ public class Cryptage2 implements ICryptage {
 		Preconditions.checkNotNull(coffreFort.getMessage());
 		Preconditions.checkNotNull(coffreFort.getMessage().getMessage());
 
-		//File f, f2;
 		Cipher cipher;
-		//BufferedOutputStream out = null;
-		//backup();
 		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
 		toolsCoffreFort.backup();
 		LOGGER.info("ecriture data");
-		//f = donne_fichier_data();
 		cipher = getBlockCipher(true, pwd);
-		//CipherOutputStream out2 = null;
 		byte texte[];
 		String contenu = coffreFort.getMessage().getMessage();
 		texte = contenu.getBytes(StandardCharsets.UTF_8);
@@ -138,8 +116,6 @@ public class Cryptage2 implements ICryptage {
 
 		coffreFort.setKeystorePassword(pwd);
 
-		//f2 = donne_fichier_data_hash();//new File(f.getParent(),"hash.asc");
-		//enregistre_hash(texte, f2);
 		Path path = getPathCoffreFort();
 
 		toolsCoffreFort.save(coffreFort, path);
@@ -158,31 +134,24 @@ public class Cryptage2 implements ICryptage {
 		if (keyStore == null) {
 			throw new IllegalArgumentException();
 		}
-		CiperCrypt ciperCrypt=coffreFort.getConfig().getCiperCrypt();
-		if(ciperCrypt==null){
-			ciperCrypt=ConfigFactory.createCiperCrypt();
+		CiperCrypt ciperCrypt = coffreFort.getConfig().getCiperCrypt();
+		if (ciperCrypt == null) {
+			ciperCrypt = ConfigFactory.createCiperCrypt();
 			coffreFort.getConfig().setCiperCrypt(ciperCrypt);
 		}
 		Cipher cipher;
-		if(ciperCrypt.getProvider()==null||ciperCrypt.getProvider().trim().isEmpty()){
+		if (ciperCrypt.getProvider() == null || ciperCrypt.getProvider().trim().isEmpty()) {
 			cipher = Cipher.getInstance(ciperCrypt.getAlgorithme());
 		} else {
 			cipher = Cipher.getInstance(ciperCrypt.getAlgorithme(), ciperCrypt.getProvider());//new DESEngine();
 		}
-		//Cipher cipher = Cipher.getInstance("AES/CTR/PKCS7Padding");//new DESEngine();
-		//BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(engine));
-		//String keyString="ABCDEF";
-		//byte[] key = keyString.getBytes();
 		SecretKeySpec key;
-		//char[] pwd="abc".toCharArray();
-		//byte clef[]=new byte[]{30,62,-23,41,27,8,61,6,70,111,-109,-39,88,-7,48,0};
 		byte ivBytes[] = new byte[]{56, -35, 13, 84, 17, 21, 90, 39, 32, 112, 115, 41, -63, 33, -92, 64};
-		if(ciperCrypt.getKeyIv()!=null&&ciperCrypt.getKeyIv().length>0){
-			ivBytes=ciperCrypt.getKeyIv();
+		if (ciperCrypt.getKeyIv() != null && ciperCrypt.getKeyIv().length > 0) {
+			ivBytes = ciperCrypt.getKeyIv();
 		}
 
 		Key clef = keyStore.getKey(coffreFort.getConfig().getKeyCrypt().getSecretKeyEntry(), pwd);
-		//byte ivBytes[]=key_store.getKey(IV_CRYPTAGE, pwd);
 		key = new SecretKeySpec(clef.getEncoded(), clef.getAlgorithm());
 		IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
 		if (cryptage) {
@@ -190,7 +159,7 @@ public class Cryptage2 implements ICryptage {
 		} else {
 			cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
 		}
-		if(ciperCrypt!=null) {
+		if (ciperCrypt != null) {
 			ciperCrypt.setKeyIv(ivBytes);
 		}
 		return cipher;
@@ -242,7 +211,7 @@ public class Cryptage2 implements ICryptage {
 	}
 
 	@Override
-	public void loadKeyStore(char[] key) throws GeneralSecurityException, IOException, KeyStoreHashException, CoffreFortException {
+	public void loadKeyStore(char[] key) throws GeneralSecurityException, IOException, CoffreFortException {
 		Preconditions.checkNotNull(key, "Le mot de passe ne peut pas être null");
 		Preconditions.checkArgument(key.length > 0, "Le mot de passe ne peut pas être null");
 		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
@@ -255,13 +224,10 @@ public class Cryptage2 implements ICryptage {
 		Resultat res;
 		res = new Resultat();
 		try {
-			//KeyStore key_store0;
 			if (password == null || password.length == 0) {
 				res.addError("Mot de passe vide");
 				return res;
 			}
-			//key_store0 = KeyStore.getInstance(KeyStoreFormat, "BC");
-			//key_store0.load(new FileInputStream(KeyStoreFile()), password);
 			ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
 			CoffreFort coffreFort = toolsCoffreFort.load(getPathCoffreFort(), password);
 			if (coffreFort == null) {
