@@ -1,6 +1,8 @@
 package org.abarhub.angerona.coffrefort;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.gson.Gson;
 import org.abarhub.angerona.config.ConfigCrypt;
 import org.abarhub.angerona.exception.CoffreFortException;
@@ -36,6 +38,7 @@ public class ToolsCoffreFort {
 	private static final String MESSAGE_FILENAME = "message.crp";
 	private static final String PARAM_JSON_FILENAME = "param.json";
 	private static final String KEYSTORE_P12_FILENAME = "keystore.p12";
+	private static final Joiner JOINER = Joiner.on("\n");
 
 	public void save(CoffreFort coffreFort, Path fichier) throws IOException, GeneralSecurityException, CoffreFortException {
 		Preconditions.checkNotNull(coffreFort);
@@ -58,6 +61,7 @@ public class ToolsCoffreFort {
 				}
 
 				writeNextFile(out, filename, buf);
+				writeHashFile(out, convertFileName(filename), buf);
 
 				filename = PARAM_JSON_FILENAME;
 				buf = null;
@@ -71,6 +75,7 @@ public class ToolsCoffreFort {
 				}
 
 				writeNextFile(out, filename, buf);
+				writeHashFile(out, convertFileName(filename), buf);
 
 				filename = KEYSTORE_P12_FILENAME;
 				buf = null;
@@ -84,6 +89,7 @@ public class ToolsCoffreFort {
 				}
 
 				writeNextFile(out, filename, buf);
+				writeHashFile(out, convertFileName(filename), buf);
 
 				out.finish();
 				out.flush();
@@ -110,6 +116,29 @@ public class ToolsCoffreFort {
 		LOGGER.info("enregistrement du hash OK");
 
 		LOGGER.info("sauvegarde du coffre OK");
+	}
+
+	private void writeHashFile(ZipOutputStream out, String fileName, byte[] texte) throws GeneralSecurityException, IOException {
+		byte[] buf;
+		List<String> liste;
+		liste = new ArrayList<>();
+		for (TypeHash t : TypeHash.values()) {
+			buf = Tools.calcul_hash(texte, t.getAlgo());
+			liste.add(t.getNom() + "=" + Tools.convHexString(buf));
+		}
+		String res = JOINER.join(liste) + "\n";
+		writeNextFile(out, fileName, res.getBytes(StandardCharsets.UTF_8));
+	}
+
+	private String convertFileName(String filename) throws CoffreFortException {
+		Preconditions.checkNotNull(filename);
+		int i = filename.lastIndexOf('.');
+		if (i > 0) {
+			filename = filename.substring(0, i) + ".asc";
+		} else {
+			filename = filename + ".asc";
+		}
+		return filename;
 	}
 
 	private Path getPathHash(Path fichier) {
@@ -193,6 +222,7 @@ public class ToolsCoffreFort {
 			Gson gson;
 			ConfigCrypt configCrypt;
 			byte[] buf = contenuZip.get(PARAM_JSON_FILENAME);
+			verifieHashDansZip(buf, PARAM_JSON_FILENAME, contenuZip);
 			gson = Tools.createGson();
 			configCrypt = gson.fromJson(new String(buf, StandardCharsets.UTF_8), ConfigCrypt.class);
 			coffreFort.setConfig(configCrypt);
@@ -203,6 +233,7 @@ public class ToolsCoffreFort {
 
 		if (contenuZip.containsKey(KEYSTORE_P12_FILENAME)) {
 			byte[] buf = contenuZip.get(KEYSTORE_P12_FILENAME);
+			verifieHashDansZip(buf, KEYSTORE_P12_FILENAME, contenuZip);
 			KeyStore keyStore = KeyStore.getInstance(coffreFort.getConfig().getKeystoreAlgo());
 			keyStore.load(new ByteArrayInputStream(buf), key);
 			coffreFort.setKeystore(keyStore);
@@ -213,6 +244,7 @@ public class ToolsCoffreFort {
 
 		if (contenuZip.containsKey(MESSAGE_FILENAME)) {
 			byte[] buf = contenuZip.get(MESSAGE_FILENAME);
+			verifieHashDansZip(buf, MESSAGE_FILENAME, contenuZip);
 			Message message = new Message();
 			message.setMessageCrypte(buf);
 			coffreFort.setMessage(message);
@@ -224,6 +256,25 @@ public class ToolsCoffreFort {
 		LOGGER.info("chargement du coffre fort OK");
 
 		return coffreFort;
+	}
+
+	private void verifieHashDansZip(byte[] buf, String fileName, Map<String, byte[]> contenuZip) throws CoffreFortException, GeneralSecurityException {
+		Preconditions.checkNotNull(fileName);
+		Preconditions.checkNotNull(contenuZip);
+		LOGGER.info("Vérification hash du fichier {} du zip", fileName);
+		String filenameHash = convertFileName(fileName);
+		if (contenuZip.containsKey(filenameHash)) {
+			byte[] contenuFichierHash = contenuZip.get(filenameHash);
+			String contenu = new String(contenuFichierHash, StandardCharsets.UTF_8);
+			List<String> lignes = Splitter.on('\n').trimResults().omitEmptyStrings().splitToList(contenu);
+			if (!verifyHash(buf, lignes)) {
+				LOGGER.info("Vérification hash Ok");
+			} else {
+				LOGGER.error("Vérification hash KO");
+			}
+		} else {
+			LOGGER.error("Le fichier {} n'est pas dans le zip", filenameHash);
+		}
 	}
 
 	private void verifieHash(Path fichier) throws IOException, CoffreFortException {
@@ -264,7 +315,7 @@ public class ToolsCoffreFort {
 	}
 
 
-	protected boolean verifyHash(byte[] toByteArray, List<String> lignes) throws IOException, GeneralSecurityException {
+	protected boolean verifyHash(byte[] toByteArray, List<String> lignes) throws GeneralSecurityException {
 		TypeHash type_hash;
 		String s2;
 		byte[] buf;

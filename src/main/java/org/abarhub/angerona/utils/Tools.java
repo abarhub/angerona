@@ -71,7 +71,7 @@ public class Tools {
 		Files.write(p, contenu, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
 	}
 
-	public static byte[] calcul_hash(byte[] contenu, String algo) throws IOException, GeneralSecurityException {
+	public static byte[] calcul_hash(byte[] contenu, String algo) throws GeneralSecurityException {
 		MessageDigest hash;
 		hash = MessageDigest.getInstance(algo, "BC");
 		hash.update(contenu);
