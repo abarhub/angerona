@@ -1,9 +1,9 @@
 package org.abarhub.angerona;
 
 import org.abarhub.angerona.gui.JPrincipal;
+import org.abarhub.angerona.security.Traitement;
 import org.abarhub.angerona.utils.Resultat;
 import org.abarhub.angerona.utils.Tools;
-import org.abarhub.angerona.security.Traitement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,11 +16,11 @@ import java.security.GeneralSecurityException;
  * Hello world!
  */
 public class App {
-	final static Logger logger = LoggerFactory.getLogger(App.class);
+	final static Logger LOGGER = LoggerFactory.getLogger(App.class);
 
 
 	public static void main(String[] args) {
-		logger.info("Demarrage...");
+		LOGGER.info("Demarrage...");
 		demarre_gui();
 		//test1();
 		//test2();
@@ -28,6 +28,9 @@ public class App {
 
 	private static void demarre_gui() {
 		String message;
+
+		LOGGER.info("version OS: {}", System.getProperty("os.name"));
+		LOGGER.info("version Java: {}", System.getProperty("java.version"));
 
 		for (int i = 0; i < 3; i++) {
 			JPasswordField pf = new JPasswordField();
@@ -51,21 +54,21 @@ public class App {
 					msg_err = res.getMessageError();
 					if (msg_err != null && msg_err.contains("Illegal key size")) {
 						msg_err += ". Pb de contrainte du key size pour ce JRE ?";
-						logger.info("Erreur key size pour le jre ? ( "
+						LOGGER.info("Erreur key size pour le jre ? ( "
 								+ "http://www.bouncycastle.org/wiki/display/JA1/Frequently+Asked+Questions "
 								+ "classpath:" + System.getenv("CLASSPATH") + " )");
 					}
-					logger.info("Erreur password demarrage:" + msg_err);
+					LOGGER.info("Erreur password demarrage:" + msg_err);
 					JOptionPane.showMessageDialog(null,
 							"Mot de passe incorrecte. " + ((msg_err != null) ? "(" + msg_err + ")" : ""),
 							"Erreur",
 							JOptionPane.ERROR_MESSAGE);
 				}
 			} else if (okCxl == JOptionPane.CANCEL_OPTION) {
-				logger.info("Abandon démarrage");
+				LOGGER.info("Abandon démarrage");
 				break;
 			} else {
-				logger.info("Abandon démarrage bouton fermé");
+				LOGGER.info("Abandon démarrage bouton fermé");
 				break;
 			}
 		}
@@ -84,7 +87,7 @@ public class App {
 					}
 				}
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-				logger.error(ex.getLocalizedMessage(), ex);
+				LOGGER.error(ex.getLocalizedMessage(), ex);
 			}
 		}
 		tmp.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -106,7 +109,7 @@ public class App {
 			String passwordString = new String(passwordChars);
 			tr.initialise_keystore(passwordString.toCharArray());
 		} catch (GeneralSecurityException | IOException ex) {
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 		}
 	}
 
@@ -118,7 +121,7 @@ public class App {
 			return tr.verifie_password(password);
 		} catch (IOException ex) {
 			//Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-			logger.error(ex.getLocalizedMessage(), ex);
+			LOGGER.error(ex.getLocalizedMessage(), ex);
 			res.addError(ex.getLocalizedMessage());
 		}
 
