@@ -13,6 +13,7 @@
     <modules>
         <module>angerona-core</module>
         <module>angeronagui</module>
+        <module>angeronaweb</module>
         <!--<module>jouvinio-daoImpl</module>-->
         <!--<module>jouvinio-datas</module>-->
         <!--<module>jouvinio-service</module>-->

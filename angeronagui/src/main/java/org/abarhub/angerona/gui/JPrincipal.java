@@ -185,79 +185,15 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 			tr.enregistre(s, password);
 
 			s2 = tr.lecture(password);
-			//System.out.println("s="+s+"!");
-			//System.out.println("s2="+s2+"!");
 			if (!s.equals(s2)) {
 				erreur("Erreur pour relire le fichier !");
-			} else {
-				//enregistre2(s, password);
 			}
+
 		} catch (Exception ex) {
 			LOGGER.error(ex.getLocalizedMessage(), ex);
 			erreur("Erreur:" + ex.getLocalizedMessage());
 		}
 	}//GEN-LAST:event_jButton2ActionPerformed
-
-//	private void enregistre2(String s, char[] password) throws IOException, GeneralSecurityException, InvalidCipherTextException, CoffreFortException {
-//		Traitement2 traitement2 = new Traitement2();
-//		traitement2.enregistre(s, password);
-//	}
-//
-//	private void enregistre20(String s, char[] password) {
-//		try {
-//			Path fichier = Paths.get("C:\\projet\\angerona\\data/keystore.p12");
-//
-//			LOGGER.info("Enregistrement de {} ...", fichier);
-//			KeyStore keyStore = KeyStore.getInstance("PKCS12");
-//			keyStore.load(null, null); // Initialize a blank keystore
-//			Random random = Tools.getSecureRandom();
-//			byte[] val = new byte[32];
-//			random.nextBytes(val);
-//			SecretKey key = new SecretKeySpec(val, "AES");
-//			//char[] password = "changeit".toCharArray();
-//			byte[] salt = new byte[20];
-//			random.nextBytes(salt);
-//			keyStore.setEntry("clef_cryptage", new KeyStore.SecretKeyEntry(key),
-//					new KeyStore.PasswordProtection(password,
-//							"PBEWithHmacSHA512AndAES_128",
-//							new PBEParameterSpec(salt, 100_000)));
-//			//keyStore.store(Files.newOutputStream(fichier,StandardOpenOption.CREATE_NEW,
-//			//		StandardOpenOption.TRUNCATE_EXISTING), password);
-//			keyStore.store(new FileOutputStream(fichier.toFile()), password);
-//
-//			LOGGER.info("Enregistrement de {} OK", fichier);
-//
-//			LOGGER.info("Fichier {} existe : {}", fichier, Files.exists(fichier));
-//
-//			ConfigCrypt configCrypt;// = new ConfigCrypt();
-////			configCrypt.setDateCreation(new Date());
-////			configCrypt.setKeystoreAlgo("PKCS12");
-////			KeyCrypt keyCrypt = new KeyCrypt();
-////			keyCrypt.setSecretKeyCryptage("AES");
-////			keyCrypt.setSecretKeyEntry("clef_cryptage");
-////			keyCrypt.setProtectionAlgo("PBEWithHmacSHA512AndAES_128");
-////			keyCrypt.setProtectionIteration(100_000);
-////			keyCrypt.setKeyIv(salt);
-////			configCrypt.setKeyCrypt(keyCrypt);
-//			configCrypt = ConfigFactory.createNewConfigCrypt();
-//			configCrypt.getKeyCrypt().setKeyIv(salt);
-//
-//			//GsonBuilder gsonBuilder = new GsonBuilder();
-//			//gsonBuilder.registerTypeAdapter(Date.class, new LocalDateTimeSerializer());
-//			//gsonBuilder.registerTypeAdapter(byte[].class, new ByteArraySerializer());
-//
-//			Gson gson;
-//			//gson = gsonBuilder.create();
-//			gson = Tools.createGson();
-//			//gson = new Gson();
-//			String json = gson.toJson(configCrypt);
-//
-//			Files.write(fichier.getParent().resolve("param.json"), json.getBytes(StandardCharsets.UTF_8));
-//
-//		} catch (Exception e) {
-//			LOGGER.error(e.getLocalizedMessage(), e);
-//		}
-//	}
 
 	private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
 		Traitement tr;
@@ -285,13 +221,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 
 				tr.enregistre_changement_clef(s, pwd);
 
-                /*tr.load_keystore(password);
-
-                tr.enregistre(s);*/
-
 				s2 = tr.lecture(pwd);
-				//System.out.println("s="+s+"!");
-				//System.out.println("s2="+s2+"!");
 				if (s.equals(s2)) {
 					password = pwd;
 				} else {
@@ -312,50 +242,6 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 		recherche(true);
 	}//GEN-LAST:event_jButton6ActionPerformed
 
-	/**
-	 * @param args the command line arguments
-	 */
-	public void main(String args[]) {
-		if (2 == 3 - 1) {
-			throw new IllegalArgumentException();
-		}
-		/*
-		 * Set the Nimbus look and feel
-		 */
-		//<editor-fold defaultstate="collapsed" desc=" Look and feel setting core (optional) ">
-        /*
-         * If Nimbus (introduced in Java SE 6) is not available, stay with the
-         * default look and feel. For details see
-         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         * /
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /*
-         * Create and display the form
-         */
-        /*java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
-                new JPrincipal().setVisible(true);
-            }
-        });*/
-	}
 	// End of variables declaration//GEN-END:variables
 
 	private boolean lecture_fichier() {
@@ -386,8 +272,7 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 		int okCxl = JOptionPane.showConfirmDialog(this, pf, "Saisissez le nouveau mot de passe", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
 		if (okCxl == JOptionPane.OK_OPTION) {
-			//String password = new String(pf.getPassword());
-			//System.err.println("You entered: " + password);
+
 			res1 = pf.getPassword();
 			if (res1 == null || res1.length < 10) {
 				erreur("Mot de passe incorrecte");
@@ -437,26 +322,22 @@ public class JPrincipal extends javax.swing.JFrame implements WindowListener {
 				pos_traitement = pos;
 				pos_traitement_fin = pos_traitement + str_recherche.length();
 				SwingUtilities.invokeLater(
-						new Runnable() {
-
-							@Override
-							public void run() {
-								if (false) {
-									jTextArea1.setCaretPosition(pos_traitement_fin);
-									jTextArea1.moveCaretPosition(pos_traitement);
-								} else {
-									Highlighter h = jTextArea1.getHighlighter();
-									h.removeAllHighlights();
-									try {
-										h.addHighlight(pos_traitement,
-												pos_traitement_fin,
-												DefaultHighlighter.DefaultPainter);
-									} catch (BadLocationException ex) {
-										LOGGER.error("Erreur:" + ex.getLocalizedMessage(), ex);
-									}
+						() -> {
+							if (false) {
+								jTextArea1.setCaretPosition(pos_traitement_fin);
+								jTextArea1.moveCaretPosition(pos_traitement);
+							} else {
+								Highlighter h = jTextArea1.getHighlighter();
+								h.removeAllHighlights();
+								try {
+									h.addHighlight(pos_traitement,
+											pos_traitement_fin,
+											DefaultHighlighter.DefaultPainter);
+								} catch (BadLocationException ex) {
+									LOGGER.error("Erreur:" + ex.getLocalizedMessage(), ex);
 								}
-								jTextArea1.setCaretPosition(new_pos);
 							}
+							jTextArea1.setCaretPosition(new_pos);
 						}
 				);
 
