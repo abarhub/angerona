@@ -52,6 +52,7 @@ function test(model) {
     console.log("coucou2");
 
     var password = model.password;
+    model.password = '';
 
     var keypair = generateKeyPair();
 
@@ -115,6 +116,11 @@ function main() {
                     this.messageErreur = "Erreur pour récupérer le mot de passe";
                 }
 
+            },
+            reinit: function () {
+                this.message = '';
+                this.messageErreur = '';
+                this.password = '';
             }
         }
     });

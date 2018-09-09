@@ -13,10 +13,11 @@
 
 
 <div id="app">
-    <p>{{ message }}</p>
     <p style="color: red">{{ messageErreur }}</p>
-    <input v-model="password">
+    <input v-model="password" type="password">
     <button v-on:click="connexion">Connexion</button>
+    <button v-on:click="reinit">Reinitialiser</button>
+    <pre>{{ message }}</pre>
 </div>
 
 <script src="js/main.js"></script>

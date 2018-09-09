@@ -26,7 +26,7 @@ public class MainController {
 	public ReponseDTO getMessage(@RequestBody DemandeDTO demandeDTO) throws Exception {
 		ReponseDTO reponseDTO;
 
-		LOGGER.info("demandeDTO={}", demandeDTO);
+		LOGGER.debug("demandeDTO={}", demandeDTO);
 
 		String password = Base64Util.decode(demandeDTO.getPassword());
 

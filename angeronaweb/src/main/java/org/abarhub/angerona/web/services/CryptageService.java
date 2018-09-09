@@ -1,7 +1,13 @@
 package org.abarhub.angerona.web.services;
 
+import com.google.common.base.Verify;
+import org.abarhub.angerona.core.exception.CoffreFortException;
+import org.abarhub.angerona.core.exception.KeyStoreHashException;
+import org.abarhub.angerona.core.security.Traitement;
+import org.abarhub.angerona.core.utils.Tools;
 import org.abarhub.angerona.web.dto.ReponseDTO;
 import org.abarhub.angerona.web.util.Base64Util;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
@@ -35,12 +41,16 @@ public class CryptageService {
 		LOGGER.info("BouncyCastle provider added.");
 	}
 
-	public ReponseDTO getMessage(String password, String cle) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+	public ReponseDTO getMessage(String password, String cle) throws GeneralSecurityException, IOException, KeyStoreHashException, CoffreFortException, InvalidCipherTextException {
+
+		Verify.verifyNotNull(password);
+		Verify.verify(!password.isEmpty());
+		Verify.verifyNotNull(cle);
+		Verify.verify(!cle.isEmpty());
 
 		ReponseDTO reponseDTO=new ReponseDTO();
 
-		LOGGER.info("password={}", password);
-
+		//LOGGER.info("password={}", password);
 
 		KeyFactory factory = KeyFactory.getInstance("RSA", "BC");
 
@@ -48,6 +58,8 @@ public class CryptageService {
 
 
 		String message = "message0-" + System.currentTimeMillis();
+
+		message=lectureFichier(password);
 
 		SecretKey secretKey = generateSecretKey();
 
@@ -70,6 +82,31 @@ public class CryptageService {
 		reponseDTO.setCle(Base64Util.encode(crypte));
 
 		return reponseDTO;
+	}
+
+	private String lectureFichier(String password) throws IOException, KeyStoreHashException, CoffreFortException, GeneralSecurityException, InvalidCipherTextException {
+
+		Traitement tr = Tools.createTraitement();
+		tr.load_keystore(conv(password));
+		String s = tr.lecture(conv(password));
+		if (s != null) {
+			return s;
+		}
+
+		return null;
+	}
+
+	private char[] conv(String password) {
+		Verify.verifyNotNull(password);
+		Verify.verify(!password.isEmpty());
+
+		char[] buf=new char[password.length()];
+
+		for(int i=0;i<password.length();i++){
+			buf[i]=password.charAt(i);
+		}
+
+		return buf;
 	}
 
 	private SecretKey generateSecretKey() throws NoSuchAlgorithmException, NoSuchProviderException {
