@@ -143,26 +143,44 @@ public class Cryptage2 implements ICryptage {
 		if (keyStore == null) {
 			throw new IllegalArgumentException();
 		}
+		LOGGER.debug("getCiperCrypt ...");
 		CiperCrypt ciperCrypt = coffreFort.getConfig().getCiperCrypt();
+		LOGGER.debug("getCiperCrypt ok");
 		if (ciperCrypt == null) {
+			LOGGER.debug("ConfigFactory.createCiperCrypt ...");
 			ciperCrypt = ConfigFactory.createCiperCrypt();
+			LOGGER.debug("ConfigFactory.createCiperCrypt ok");
+			LOGGER.debug("setCiperCrypt ...");
 			coffreFort.getConfig().setCiperCrypt(ciperCrypt);
+			LOGGER.debug("setCiperCrypt ok");
 		}
 		Cipher cipher;
 		if (ciperCrypt.getProvider() == null || ciperCrypt.getProvider().trim().isEmpty()) {
+			LOGGER.debug("Cipher.getInstance ...");
 			cipher = Cipher.getInstance(ciperCrypt.getAlgorithme());
+			LOGGER.debug("Cipher.getInstance ok");
 		} else {
+			LOGGER.debug("Cipher.getInstance2 ...");
 			cipher = Cipher.getInstance(ciperCrypt.getAlgorithme(), ciperCrypt.getProvider());//new DESEngine();
+			LOGGER.debug("Cipher.getInstance2 ok");
 		}
 		SecretKeySpec key;
+		LOGGER.debug("get ivBytes ...");
 		byte ivBytes[] = new byte[]{56, -35, 13, 84, 17, 21, 90, 39, 32, 112, 115, 41, -63, 33, -92, 64};
 		if (ciperCrypt.getKeyIv() != null && ciperCrypt.getKeyIv().length > 0) {
 			ivBytes = ciperCrypt.getKeyIv();
 		}
+		LOGGER.debug("get ivBytes ok");
 
+		LOGGER.debug("keyStore.getKey ...");
 		Key clef = keyStore.getKey(coffreFort.getConfig().getKeyCrypt().getSecretKeyEntry(), pwd);
+		LOGGER.debug("keyStore.getKey ok");
+		LOGGER.debug("SecretKeySpec ...");
 		key = new SecretKeySpec(clef.getEncoded(), clef.getAlgorithm());
+		LOGGER.debug("SecretKeySpec ok");
+		LOGGER.debug("IvParameterSpec ...");
 		IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+		LOGGER.debug("IvParameterSpec ok");
 		LOGGER.debug("debut cipher.init (cryptage={})", cryptage);
 		if (cryptage) {
 			cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
