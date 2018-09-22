@@ -26,13 +26,25 @@ public class MainController {
 	public ReponseDTO getMessage(@RequestBody DemandeDTO demandeDTO) throws Exception {
 		ReponseDTO reponseDTO;
 
+		LOGGER.info("debut getMessage");
+
 		LOGGER.debug("demandeDTO={}", demandeDTO);
 
+		LOGGER.debug("decode.password ...");
 		String password = Base64Util.decode(demandeDTO.getPassword());
+		LOGGER.debug("decode.password ok");
 
+		LOGGER.debug("decode.cle ...");
 		String cle = Base64Util.decode(demandeDTO.getCle());
+		LOGGER.debug("decode.cle ok");
 
+		LOGGER.debug("cryptageService.getMessage ...");
 		reponseDTO = cryptageService.getMessage(password, cle);
+		LOGGER.debug("cryptageService.getMessage OK");
+
+		LOGGER.debug("reponse={}", demandeDTO);
+
+		LOGGER.info("fin getMessage");
 
 		return reponseDTO;
 	}

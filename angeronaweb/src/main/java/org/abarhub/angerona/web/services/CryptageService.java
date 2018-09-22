@@ -48,38 +48,56 @@ public class CryptageService {
 		Verify.verifyNotNull(cle);
 		Verify.verify(!cle.isEmpty());
 
-		ReponseDTO reponseDTO=new ReponseDTO();
+		LOGGER.debug("debut getMessage");
+
+		ReponseDTO reponseDTO = new ReponseDTO();
 
 		//LOGGER.info("password={}", password);
 
+		LOGGER.debug("getInstance rsa ...");
 		KeyFactory factory = KeyFactory.getInstance("RSA", "BC");
+		LOGGER.debug("getInstance rsa ok");
 
 		RSAPublicKey pub = (RSAPublicKey) extractPublicKey(factory, cle);
 
 
 		String message = "message0-" + System.currentTimeMillis();
 
-		message=lectureFichier(password);
+		LOGGER.debug("lectureFichier ...");
+		message = lectureFichier(password);
+		LOGGER.debug("lectureFichier ok");
 
+		LOGGER.debug("generateSecretKey ...");
 		SecretKey secretKey = generateSecretKey();
+		LOGGER.debug("generateSecretKey ok");
 
+		LOGGER.debug("getInstance aes ...");
 		Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
+		LOGGER.debug("getInstance aes ok");
 
+		LOGGER.debug("generate iv ...");
 		byte[] iv = new byte[aesCipher.getBlockSize()];
 		randomService.nextBytes(iv);
 		IvParameterSpec ivParams = new IvParameterSpec(iv);
 
 		reponseDTO.setIv(Base64Util.encode(iv));
+		LOGGER.debug("generate iv ok");
 
+		LOGGER.debug("crypt ...");
 		aesCipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParams);
 
 		byte[] byteCipherText = aesCipher.doFinal(message.getBytes(StandardCharsets.UTF_8));
 
 		reponseDTO.setReponse(Base64Util.encode(byteCipherText));
+		LOGGER.debug("crypt ok");
 
+		LOGGER.debug("crypt2 ...");
 		byte[] crypte = encrypt(pub, secretKey.getEncoded());
 
 		reponseDTO.setCle(Base64Util.encode(crypte));
+		LOGGER.debug("crypt2 ok");
+
+		LOGGER.debug("fin getMessage");
 
 		return reponseDTO;
 	}
@@ -100,10 +118,10 @@ public class CryptageService {
 		Verify.verifyNotNull(password);
 		Verify.verify(!password.isEmpty());
 
-		char[] buf=new char[password.length()];
+		char[] buf = new char[password.length()];
 
-		for(int i=0;i<password.length();i++){
-			buf[i]=password.charAt(i);
+		for (int i = 0; i < password.length(); i++) {
+			buf[i] = password.charAt(i);
 		}
 
 		return buf;

@@ -65,6 +65,7 @@ public class Cryptage2 implements ICryptage {
 		int len;
 		String buf3;
 		LOGGER.info("lecture data");
+		LOGGER.debug("debut lecture");
 		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
 		Path fichierCoffreFort = this.getPathCoffreFort();
 		if (fichierCoffreFort == null || !Files.exists(fichierCoffreFort)) {
@@ -86,6 +87,7 @@ public class Cryptage2 implements ICryptage {
 		buf3 = buf2.toString(StandardCharsets.UTF_8.displayName());
 		coffreFort.getMessage().setMessage(buf3);
 		this.coffreFort = coffreFort;
+		LOGGER.debug("fin lecture");
 	}
 
 	@Override
@@ -96,6 +98,7 @@ public class Cryptage2 implements ICryptage {
 		Preconditions.checkNotNull(coffreFort.getMessage());
 		Preconditions.checkNotNull(coffreFort.getMessage().getMessage());
 
+		LOGGER.debug("debut ecriture");
 		Cipher cipher;
 		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
 		toolsCoffreFort.backup();
@@ -120,6 +123,7 @@ public class Cryptage2 implements ICryptage {
 
 		toolsCoffreFort.save(coffreFort, path);
 
+		LOGGER.debug("fin ecriture");
 	}
 
 	private Cipher getBlockCipher(boolean cryptage, char[] pwd) throws GeneralSecurityException {
@@ -130,6 +134,7 @@ public class Cryptage2 implements ICryptage {
 		Preconditions.checkNotNull(coffreFort.getConfig());
 		//Preconditions.checkNotNull(coffreFort.getConfig().getCiperCrypt());
 
+		LOGGER.debug("debut getBlockCipher");
 		KeyStore keyStore = coffreFort.getKeystore();
 		if (keyStore == null) {
 			throw new IllegalArgumentException();
@@ -162,6 +167,7 @@ public class Cryptage2 implements ICryptage {
 		if (ciperCrypt != null) {
 			ciperCrypt.setKeyIv(ivBytes);
 		}
+		LOGGER.debug("fin getBlockCipher");
 		return cipher;
 	}
 
@@ -189,6 +195,7 @@ public class Cryptage2 implements ICryptage {
 		Preconditions.checkNotNull(coffreFort);
 		Preconditions.checkNotNull(coffreFort.getConfig());
 
+		LOGGER.debug("debut init_keystore");
 		ConfigCrypt configCrypt = coffreFort.getConfig();
 
 		KeyStore keyStore = KeyStore.getInstance(configCrypt.getKeystoreAlgo());
@@ -208,20 +215,24 @@ public class Cryptage2 implements ICryptage {
 		configCrypt.getKeyCrypt().setKeyIv(salt);
 
 		coffreFort.setKeystore(keyStore);
+		LOGGER.debug("fin init_keystore");
 	}
 
 	@Override
 	public void loadKeyStore(char[] key) throws GeneralSecurityException, IOException, CoffreFortException {
 		Preconditions.checkNotNull(key, "Le mot de passe ne peut pas être null");
 		Preconditions.checkArgument(key.length > 0, "Le mot de passe ne peut pas être null");
+		LOGGER.debug("debut loadKeyStore");
 		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
 		Path fichier = getPathCoffreFort();
 		coffreFort = toolsCoffreFort.load(fichier, key);
+		LOGGER.debug("fin loadKeyStore");
 	}
 
 	@Override
 	public Resultat verifie_password(char[] password) {
 		Resultat res;
+		LOGGER.debug("debut verifie_password");
 		res = new Resultat();
 		try {
 			if (password == null || password.length == 0) {
@@ -238,6 +249,7 @@ public class Cryptage2 implements ICryptage {
 			LOGGER.error(ex.getLocalizedMessage(), ex);
 			res.addError(ex.getLocalizedMessage());
 		}
+		LOGGER.debug("fin verifie_password");
 		return res;
 	}
 

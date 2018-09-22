@@ -24,7 +24,9 @@ public class Traitement2 extends Traitement implements ITraitement {
 	@Override
 	protected void init(char[] password) {
 		try {
+			LOGGER.debug("debut init");
 			crypt.loadKeyStore(password);
+			LOGGER.debug("fin init");
 		} catch (Exception e) {
 			LOGGER.error("Erreur", e);
 			throw new RuntimeException(e);

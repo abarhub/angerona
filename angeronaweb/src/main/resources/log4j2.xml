@@ -15,7 +15,11 @@
             <AppenderRef ref="ConsoleAppender" />
         </Logger>
 
-        <Root level="info">
+        <!--<Logger name="org.abarhub.angerona" level="debug" >-->
+            <!--<AppenderRef ref="ConsoleAppender" />-->
+        <!--</Logger>-->
+
+        <Root level="debug">
             <AppenderRef ref="ConsoleAppender" />
         </Root>
     </Loggers>
