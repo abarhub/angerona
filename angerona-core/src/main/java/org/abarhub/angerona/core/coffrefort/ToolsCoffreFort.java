@@ -234,9 +234,15 @@ public class ToolsCoffreFort {
 		if (contenuZip.containsKey(KEYSTORE_P12_FILENAME)) {
 			byte[] buf = contenuZip.get(KEYSTORE_P12_FILENAME);
 			verifieHashDansZip(buf, KEYSTORE_P12_FILENAME, contenuZip);
+			LOGGER.debug("KeyStore.getInstance ...");
 			KeyStore keyStore = KeyStore.getInstance(coffreFort.getConfig().getKeystoreAlgo());
+			LOGGER.debug("KeyStore.getInstance ok");
+			LOGGER.debug("keyStore.load ...");
 			keyStore.load(new ByteArrayInputStream(buf), key);
+			LOGGER.debug("keyStore.load ok");
+			LOGGER.debug("coffreFort.setKeystore ...");
 			coffreFort.setKeystore(keyStore);
+			LOGGER.debug("coffreFort.setKeystore ok");
 		} else {
 			LOGGER.error("Le coffre fort ne contient pas le fichier {}", KEYSTORE_P12_FILENAME);
 			throw new CoffreFortException("Le coffre fort ne contient pas le fichier " + KEYSTORE_P12_FILENAME);
