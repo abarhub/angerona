@@ -24,7 +24,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -64,14 +67,15 @@ public class Cryptage2 implements ICryptage {
 		byte buf[];
 		int len;
 		String buf3;
+		Preconditions.checkNotNull(coffreFort);
 		LOGGER.info("lecture data");
 		LOGGER.debug("debut lecture");
-		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
-		Path fichierCoffreFort = this.getPathCoffreFort();
-		if (fichierCoffreFort == null || !Files.exists(fichierCoffreFort)) {
-			throw new FileNotFoundException("Le fichier coffre fort n'existe pas");
-		}
-		CoffreFort coffreFort = toolsCoffreFort.load(fichierCoffreFort, pwd);
+//		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
+//		Path fichierCoffreFort = this.getPathCoffreFort();
+//		if (fichierCoffreFort == null || !Files.exists(fichierCoffreFort)) {
+//			throw new FileNotFoundException("Le fichier coffre fort n'existe pas");
+//		}
+		CoffreFort coffreFort = this.coffreFort;//toolsCoffreFort.load(fichierCoffreFort, pwd);
 
 		buf = new byte[512];
 		cipher = getBlockCipher(false, pwd);
@@ -86,7 +90,7 @@ public class Cryptage2 implements ICryptage {
 		}
 		buf3 = buf2.toString(StandardCharsets.UTF_8.displayName());
 		coffreFort.getMessage().setMessage(buf3);
-		this.coffreFort = coffreFort;
+		//this.coffreFort = coffreFort;
 		LOGGER.debug("fin lecture");
 	}
 
@@ -159,11 +163,13 @@ public class Cryptage2 implements ICryptage {
 		Key clef = keyStore.getKey(coffreFort.getConfig().getKeyCrypt().getSecretKeyEntry(), pwd);
 		key = new SecretKeySpec(clef.getEncoded(), clef.getAlgorithm());
 		IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+		LOGGER.debug("debut cipher.init (cryptage={})", cryptage);
 		if (cryptage) {
 			cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
 		} else {
 			cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
 		}
+		LOGGER.debug("fin cipher.init");
 		if (ciperCrypt != null) {
 			ciperCrypt.setKeyIv(ivBytes);
 		}

@@ -35,6 +35,10 @@ public class CryptageService {
 	@Autowired
 	private RandomService randomService;
 
+	private KeyFactory factoryRSA;
+	private KeyGenerator keyGenerator;
+	private Cipher cipher;
+
 	@PostConstruct
 	public void init() {
 		Security.addProvider(new BouncyCastleProvider());
@@ -54,9 +58,7 @@ public class CryptageService {
 
 		//LOGGER.info("password={}", password);
 
-		LOGGER.debug("getInstance rsa ...");
-		KeyFactory factory = KeyFactory.getInstance("RSA", "BC");
-		LOGGER.debug("getInstance rsa ok");
+		KeyFactory factory = getKeyFactory();
 
 		RSAPublicKey pub = (RSAPublicKey) extractPublicKey(factory, cle);
 
@@ -102,11 +104,21 @@ public class CryptageService {
 		return reponseDTO;
 	}
 
+	private KeyFactory getKeyFactory() throws NoSuchAlgorithmException, NoSuchProviderException {
+		if(factoryRSA==null) {
+			LOGGER.debug("getInstance rsa ...");
+			factoryRSA = KeyFactory.getInstance("RSA", "BC");
+			LOGGER.debug("getInstance rsa ok");
+		}
+		return factoryRSA;
+	}
+
 	private String lectureFichier(String password) throws IOException, KeyStoreHashException, CoffreFortException, GeneralSecurityException, InvalidCipherTextException {
 
 		Traitement tr = Tools.createTraitement();
-		tr.load_keystore(conv(password));
-		String s = tr.lecture(conv(password));
+		char[] passwordBytes=conv(password);
+		tr.load_keystore(passwordBytes);
+		String s = tr.lecture(passwordBytes);
 		if (s != null) {
 			return s;
 		}
@@ -128,31 +140,54 @@ public class CryptageService {
 	}
 
 	private SecretKey generateSecretKey() throws NoSuchAlgorithmException, NoSuchProviderException {
-		KeyGenerator keyGen = KeyGenerator.getInstance("AES", "BC");
+		LOGGER.debug("generateSecretKey ...");
+		KeyGenerator keyGen = getKeyGeneratorAES();
 		keyGen.init(128);
-		return keyGen.generateKey();
+		final SecretKey secretKey = keyGen.generateKey();
+		LOGGER.debug("generateSecretKey ok");
+		return secretKey;
+	}
+
+	private KeyGenerator getKeyGeneratorAES() throws NoSuchAlgorithmException, NoSuchProviderException {
+		if(keyGenerator==null) {
+			LOGGER.debug("getKeyGeneratorAES ...");
+			keyGenerator = KeyGenerator.getInstance("AES", "BC");
+			LOGGER.debug("getKeyGeneratorAES ok");
+		}
+		return keyGenerator;
 	}
 
 	public byte[] encrypt(PublicKey key, byte[] plaintext) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 		//Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
-		Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+		if(cipher==null) {
+			LOGGER.debug("getCipherInstance RSA ...");
+			cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+			LOGGER.debug("getCipherInstance RSA ok");
+		}
+		LOGGER.debug("cipher.init ENCRYPT_MODE ...");
 		cipher.init(Cipher.ENCRYPT_MODE, key);
+		LOGGER.debug("cipher.init ENCRYPT_MODE ok");
 		return cipher.doFinal(plaintext);
 	}
 
 
 	private PublicKey extractPublicKey(KeyFactory factory, String s) throws InvalidKeySpecException, IOException {
+		LOGGER.debug("extractPublicKey ...");
 		byte[] content = getPemObject(s).getContent();
 		X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(content);
-		return factory.generatePublic(pubKeySpec);
+		final PublicKey publicKey = factory.generatePublic(pubKeySpec);
+		LOGGER.debug("extractPublicKey ok");
+		return publicKey;
 	}
 
 
 	private PemObject getPemObject(String s) throws IOException {
 		PemObject pemReader2;
+		LOGGER.debug("getPemObject ...");
 		try (PemReader pemReader = new PemReader(new StringReader(s))) {
 			pemReader2 = pemReader.readPemObject();
 		}
+		LOGGER.debug("getPemObject ok");
 		return pemReader2;
 	}
 }

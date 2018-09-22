@@ -1,5 +1,6 @@
 package org.abarhub.angerona.web.rest;
 
+import com.google.common.base.Stopwatch;
 import org.abarhub.angerona.web.dto.DemandeDTO;
 import org.abarhub.angerona.web.dto.ReponseDTO;
 import org.abarhub.angerona.web.services.CryptageService;
@@ -28,6 +29,8 @@ public class MainController {
 
 		LOGGER.info("debut getMessage");
 
+		Stopwatch stopwatch = Stopwatch.createStarted();
+
 		LOGGER.debug("demandeDTO={}", demandeDTO);
 
 		LOGGER.debug("decode.password ...");
@@ -43,6 +46,10 @@ public class MainController {
 		LOGGER.debug("cryptageService.getMessage OK");
 
 		LOGGER.debug("reponse={}", demandeDTO);
+
+		stopwatch.stop();
+
+		LOGGER.info("getMessage duree={}", stopwatch);
 
 		LOGGER.info("fin getMessage");
 
