@@ -16,7 +16,7 @@ ADD ${JAR_FILE} angerona-web.jar
 #ADD target/config.properties config.properties
 
 #RUN echo "dir=data" > config.properties
-RUN echo "dir=data" > ./target/config.properties
+#RUN echo "dir=data" > ./target/config.properties
 ADD target/config.properties config.properties
 
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/angerona-web.jar"]
