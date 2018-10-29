@@ -24,7 +24,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -64,13 +67,15 @@ public class Cryptage2 implements ICryptage {
 		byte buf[];
 		int len;
 		String buf3;
+		Preconditions.checkNotNull(coffreFort);
 		LOGGER.info("lecture data");
-		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
-		Path fichierCoffreFort = this.getPathCoffreFort();
-		if (fichierCoffreFort == null || !Files.exists(fichierCoffreFort)) {
-			throw new FileNotFoundException("Le fichier coffre fort n'existe pas");
-		}
-		CoffreFort coffreFort = toolsCoffreFort.load(fichierCoffreFort, pwd);
+		LOGGER.debug("debut lecture");
+//		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
+//		Path fichierCoffreFort = this.getPathCoffreFort();
+//		if (fichierCoffreFort == null || !Files.exists(fichierCoffreFort)) {
+//			throw new FileNotFoundException("Le fichier coffre fort n'existe pas");
+//		}
+		CoffreFort coffreFort = this.coffreFort;//toolsCoffreFort.load(fichierCoffreFort, pwd);
 
 		buf = new byte[512];
 		cipher = getBlockCipher(false, pwd);
@@ -85,7 +90,8 @@ public class Cryptage2 implements ICryptage {
 		}
 		buf3 = buf2.toString(StandardCharsets.UTF_8.displayName());
 		coffreFort.getMessage().setMessage(buf3);
-		this.coffreFort = coffreFort;
+		//this.coffreFort = coffreFort;
+		LOGGER.debug("fin lecture");
 	}
 
 	@Override
@@ -96,6 +102,7 @@ public class Cryptage2 implements ICryptage {
 		Preconditions.checkNotNull(coffreFort.getMessage());
 		Preconditions.checkNotNull(coffreFort.getMessage().getMessage());
 
+		LOGGER.debug("debut ecriture");
 		Cipher cipher;
 		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
 		toolsCoffreFort.backup();
@@ -120,6 +127,7 @@ public class Cryptage2 implements ICryptage {
 
 		toolsCoffreFort.save(coffreFort, path);
 
+		LOGGER.debug("fin ecriture");
 	}
 
 	private Cipher getBlockCipher(boolean cryptage, char[] pwd) throws GeneralSecurityException {
@@ -130,38 +138,60 @@ public class Cryptage2 implements ICryptage {
 		Preconditions.checkNotNull(coffreFort.getConfig());
 		//Preconditions.checkNotNull(coffreFort.getConfig().getCiperCrypt());
 
+		LOGGER.debug("debut getBlockCipher");
 		KeyStore keyStore = coffreFort.getKeystore();
 		if (keyStore == null) {
 			throw new IllegalArgumentException();
 		}
+		LOGGER.debug("getCiperCrypt ...");
 		CiperCrypt ciperCrypt = coffreFort.getConfig().getCiperCrypt();
+		LOGGER.debug("getCiperCrypt ok");
 		if (ciperCrypt == null) {
+			LOGGER.debug("ConfigFactory.createCiperCrypt ...");
 			ciperCrypt = ConfigFactory.createCiperCrypt();
+			LOGGER.debug("ConfigFactory.createCiperCrypt ok");
+			LOGGER.debug("setCiperCrypt ...");
 			coffreFort.getConfig().setCiperCrypt(ciperCrypt);
+			LOGGER.debug("setCiperCrypt ok");
 		}
 		Cipher cipher;
 		if (ciperCrypt.getProvider() == null || ciperCrypt.getProvider().trim().isEmpty()) {
+			LOGGER.debug("Cipher.getInstance ...");
 			cipher = Cipher.getInstance(ciperCrypt.getAlgorithme());
+			LOGGER.debug("Cipher.getInstance ok");
 		} else {
+			LOGGER.debug("Cipher.getInstance2 ...");
 			cipher = Cipher.getInstance(ciperCrypt.getAlgorithme(), ciperCrypt.getProvider());//new DESEngine();
+			LOGGER.debug("Cipher.getInstance2 ok");
 		}
 		SecretKeySpec key;
+		LOGGER.debug("get ivBytes ...");
 		byte ivBytes[] = new byte[]{56, -35, 13, 84, 17, 21, 90, 39, 32, 112, 115, 41, -63, 33, -92, 64};
 		if (ciperCrypt.getKeyIv() != null && ciperCrypt.getKeyIv().length > 0) {
 			ivBytes = ciperCrypt.getKeyIv();
 		}
+		LOGGER.debug("get ivBytes ok");
 
+		LOGGER.debug("keyStore.getKey ...");
 		Key clef = keyStore.getKey(coffreFort.getConfig().getKeyCrypt().getSecretKeyEntry(), pwd);
+		LOGGER.debug("keyStore.getKey ok");
+		LOGGER.debug("SecretKeySpec ...");
 		key = new SecretKeySpec(clef.getEncoded(), clef.getAlgorithm());
+		LOGGER.debug("SecretKeySpec ok");
+		LOGGER.debug("IvParameterSpec ...");
 		IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+		LOGGER.debug("IvParameterSpec ok");
+		LOGGER.debug("debut cipher.init (cryptage={})", cryptage);
 		if (cryptage) {
 			cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
 		} else {
 			cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
 		}
+		LOGGER.debug("fin cipher.init");
 		if (ciperCrypt != null) {
 			ciperCrypt.setKeyIv(ivBytes);
 		}
+		LOGGER.debug("fin getBlockCipher");
 		return cipher;
 	}
 
@@ -189,6 +219,7 @@ public class Cryptage2 implements ICryptage {
 		Preconditions.checkNotNull(coffreFort);
 		Preconditions.checkNotNull(coffreFort.getConfig());
 
+		LOGGER.debug("debut init_keystore");
 		ConfigCrypt configCrypt = coffreFort.getConfig();
 
 		KeyStore keyStore = KeyStore.getInstance(configCrypt.getKeystoreAlgo());
@@ -208,20 +239,24 @@ public class Cryptage2 implements ICryptage {
 		configCrypt.getKeyCrypt().setKeyIv(salt);
 
 		coffreFort.setKeystore(keyStore);
+		LOGGER.debug("fin init_keystore");
 	}
 
 	@Override
 	public void loadKeyStore(char[] key) throws GeneralSecurityException, IOException, CoffreFortException {
 		Preconditions.checkNotNull(key, "Le mot de passe ne peut pas être null");
 		Preconditions.checkArgument(key.length > 0, "Le mot de passe ne peut pas être null");
+		LOGGER.debug("debut loadKeyStore");
 		ToolsCoffreFort toolsCoffreFort = new ToolsCoffreFort();
 		Path fichier = getPathCoffreFort();
 		coffreFort = toolsCoffreFort.load(fichier, key);
+		LOGGER.debug("fin loadKeyStore");
 	}
 
 	@Override
 	public Resultat verifie_password(char[] password) {
 		Resultat res;
+		LOGGER.debug("debut verifie_password");
 		res = new Resultat();
 		try {
 			if (password == null || password.length == 0) {
@@ -238,6 +273,7 @@ public class Cryptage2 implements ICryptage {
 			LOGGER.error(ex.getLocalizedMessage(), ex);
 			res.addError(ex.getLocalizedMessage());
 		}
+		LOGGER.debug("fin verifie_password");
 		return res;
 	}
 
